@@ -13,7 +13,8 @@ from darts.models import TransformerModel, BlockRNNModel, NBEATSModel, XGBModel,
 
 ORIGINAL_DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA/'
 DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA_WEEKLY/'
-LDA_NEWS_PATH = os.getcwd() + '/data/Online Data/LDA News/'
+LDA_NEWS_PATH = os.getcwd() + '/data/Online Data/LDA News/News.csv'
+LDA_TWITTER_PATH = os.getcwd() + '/data/Online Data/LDA Twitter/Twitter.csv'
 ID_PATH = os.getcwd() + '/data/Fundamental+Technical Data/ID_Name.csv'
 RESULT_PATH = os.getcwd() + '/result/'
 PARAMETER_PATH = os.getcwd() + '/model/'
@@ -24,7 +25,7 @@ TRAINING_SIZE = 139
 VALIDATE_SIZE = 35
 TEST_SIZE = 35
 PREDICT_SIZE = 1
-STOCK_LIST = ["ADVANC", "BH", "CBG", "CPALL", "INTUCH", "IVL", "PTT", "PTTEP", "PTTGC", "SCB", "SCC", "TISCO", "WHA"]
+STOCK_LIST = ["ADVANC", "BANPU", "BH", "BTS", "CBG", "CPALL", "CPF", "INTUCH", "IVL", "KBANK", "LH", "PTT", "PTTEP", "PTTGC", "SCB", "SCC", "TISCO", "TU", "WHA"]
 MODEL_PARAM = {
     # 'TransformerModel': {
     #     'input_chunk_length': [1,3,5], 
@@ -67,64 +68,46 @@ def convert_weekly_data(stock_name):
     stock_data = stock_data.iloc[::7, :]
     
     stock_data.to_csv(DATA_PATH + stock_name + ".csv", index=False)
-    
-def highest_numbered_folder(directory):
-    number_regex = re.compile(r'\b\d+\b')
-
-    max_number = -1
-    max_folder_path = None
-
-    for item in os.listdir(directory):
-        full_path = os.path.join(directory, item)
-        if os.path.isdir(full_path):
-            match = number_regex.search(item)
-            if match:
-                number = int(match.group())
-                if number > max_number:
-                    max_number = number
-                    max_folder_path = full_path
-
-    return max_folder_path
-    
+    print("Converted to weekly for ", stock_name)
+      
 def load_data(stock_name):
     # Read the data, initially parsing dates as objects
     stock_data = pd.read_csv(os.path.join(DATA_PATH, (stock_name + ".csv")))
     id_name_map = pd.read_csv(ID_PATH)
     stock_id = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Stock_ID'].iloc[0]
     industry_name = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Industry_Name'].iloc[0]
-    highest_folder_path = highest_numbered_folder(LDA_NEWS_PATH)
-    lda_news_df = "" #pd.read_csv(f"{highest_folder_path}/{industry_name}.csv", dayfirst=True, parse_dates=["Date"])
-    lda_twitter_df = ""
+    lda_news_df = pd.read_csv(LDA_NEWS_PATH)
+    lda_twitter_df = pd.read_csv(LDA_TWITTER_PATH)
     GDELTv1 = ""
     GDELTv2 = ""
     data_df = stock_data.copy()
     return stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2
 
 def preprocess_lda_news(data_df, lda_news_df):
-    # Assuming you've already read the datasets as provided
+    data_df['Date'] = pd.to_datetime(data_df['Date'])
+    lda_news_df['Date'] = pd.to_datetime(lda_news_df['Date'])
+    
+    # Set 'Date' as index after conversion
     data_df.set_index('Date', inplace=True)
     lda_news_df.set_index('Date', inplace=True)
+    
+    # Remove news data after the last date in data_df
+    last_data_date = data_df.index.max()
+    lda_news_df = lda_news_df[lda_news_df.index <= last_data_date]
+    
+    # Prepare a DataFrame to collect summed news data
+    summed_news_df = pd.DataFrame(index=data_df.index.unique()).sort_index()
+    
+    # Sum news data forward to the nearest date in data_df
+    summed_news = lda_news_df.reindex(summed_news_df.index, method='ffill').fillna(0)
+    
+    # Concatenate all columns at once
+    summed_news_df = pd.concat([summed_news_df, summed_news], axis=1)
+    
+    # Reset index to bring 'Date' back as a column
+    summed_news_df.reset_index(inplace=True)
 
-    # Identify dates in lda_news_df that are not in data_df
-    non_intersecting_dates = lda_news_df.index.difference(data_df.index)
-
-    # Iterate through the non-intersecting dates
-    for date in non_intersecting_dates:
-        # Find the closest previous date in lda_news_df that also exists in data_df
-        previous_dates = lda_news_df.index[(lda_news_df.index < date) & (lda_news_df.index.isin(data_df.index))]
-        
-        if not previous_dates.empty:
-            nearest_prev_date = previous_dates[-1]
-            
-            # Accumulate values from the non-matching date to the closest previous date
-            for column in lda_news_df.columns:
-                lda_news_df.at[nearest_prev_date, column] += lda_news_df.at[date, column]
-            
-            # Drop the non-matching date from lda_news_df
-            lda_news_df.drop(date, inplace=True)
-    # Filter lda_news_df to only include dates present in data_df
-    updated_lda_news_df = lda_news_df[lda_news_df.index.isin(data_df.index)]
-    return updated_lda_news_df
+    return summed_news_df
 
 def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features):
     data = data.dropna()
@@ -376,6 +359,7 @@ def find_best_param(stock_name):
     overall_best_df.to_csv(path + '/best_param_overall.csv', index=False)    
 
     print("Finished find best parameter for ", stock_name)    
+    print("-----------------------------------------")
     
 def stock_tuning(stock_name, features):
     # Check if the daily tuning results file exists and remove it if it does
@@ -432,5 +416,5 @@ def stock_tuning(stock_name, features):
 
                 generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
             finalize_csv(generate_path+"/"+filename+".csv")        
-            #find_best_param(stock_name)
     print(f"Tuning completed for {stock_name}")
+    print("-----------------------------------------")

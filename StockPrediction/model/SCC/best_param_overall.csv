@@ -1,3 +1,4 @@
 Features,param,mape,rmse,da
 Fundamental,XGBModel_lags1_lags_past_covariates1_output_chunk_length1.csv,13.31,44.9,0
+Fundamental+LDA News,XGBModel_lags5_lags_past_covariates10_output_chunk_length1.csv,13.5,44.99,0
 Moving Average,window_size_5.csv,14.64,47.95,0
