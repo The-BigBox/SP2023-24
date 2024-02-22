@@ -26,24 +26,30 @@ TEST_SIZE = 35
 PREDICT_SIZE = 1
 STOCK_LIST = ["ADVANC", "BH", "CBG", "CPALL", "INTUCH", "IVL", "PTT", "PTTEP", "PTTGC", "SCB", "SCC", "TISCO", "WHA"]
 MODEL_PARAM = {
-    'TransformerModel': {
-        'input_chunk_length': [1,3,5], 
+    # 'TransformerModel': {
+    #     'input_chunk_length': [1,3,5], 
+    #     'output_chunk_length': [1], 
+    #     'n_epochs': [15],
+    #     # Add more Transformer-specific parameters if needed
+    # },
+    # 'BlockRNNModel': {
+    #     'model': ['LSTM'],
+    #     'input_chunk_length': [1,3,5], 
+    #     'output_chunk_length': [1], 
+    #     'n_epochs': [15],
+    #     # Add more BlockRNN-specific parameters if needed
+    # },
+    # 'NBEATSModel': {
+    #     'input_chunk_length': [1,3,5], 
+    #     'output_chunk_length': [1], 
+    #     'n_epochs': [15],
+    #     # Add more N-BEATS-specific parameters if needed
+    # }
+
+    'XGBModel': {
+        'lags': [1,3,5], 
+        'lags_past_covariates': [1,3,5], 
         'output_chunk_length': [1], 
-        'n_epochs': [15],
-        # Add more Transformer-specific parameters if needed
-    },
-    'BlockRNNModel': {
-        'model': ['LSTM'],
-        'input_chunk_length': [1,3,5], 
-        'output_chunk_length': [1], 
-        'n_epochs': [15],
-        # Add more BlockRNN-specific parameters if needed
-    },
-    'NBEATSModel': {
-        'input_chunk_length': [1,3,5], 
-        'output_chunk_length': [1], 
-        'n_epochs': [15],
-        # Add more N-BEATS-specific parameters if needed
     }
 }
 
@@ -120,12 +126,12 @@ def preprocess_lda_news(data_df, lda_news_df):
     updated_lda_news_df = lda_news_df[lda_news_df.index.isin(data_df.index)]
     return updated_lda_news_df
 
-def preprocess_data(data, data_df, lda_news_df, split, feature):
+def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features):
     data = data.dropna()
     serie = data[FOCUS_COMPONENT]
-    past_covariate = data[RETAIN_COMPONENTS].apply(pd.to_numeric, errors='coerce').fillna(method='ffill').fillna(method='bfill')
+    past_covariate = data[RETAIN_COMPONENTS].apply(pd.to_numeric, errors='coerce').ffill().bfill()
     
-    if 2 in feature:
+    if 2 in features:
         updated_lda_news_df = preprocess_lda_news(data_df, lda_news_df)
         past_covariate = past_covariate.join(updated_lda_news_df.reset_index().drop(columns='Date'))
 
@@ -143,12 +149,12 @@ def preprocess_data(data, data_df, lda_news_df, split, feature):
 
 def predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset):
     """Predict next n days' closing prices for each stock."""
-    model.fit(training_scaled, past_covariates=past_cov_ts, verbose=False)
-    forecast = model.predict(PREDICT_SIZE, verbose=False)
+    model.fit(training_scaled, past_covariates=past_cov_ts, verbose=True)
+    forecast = model.predict(PREDICT_SIZE, verbose=True)
     in_forecast = scaler_dataset.inverse_transform(forecast)
     return in_forecast
 
-def generate_output(stock_name, predictions, stock_data, id_name_map, split, stock, path):
+def generate_output(filename, predictions, stock_data, stock_id, split, stock, filepath):
     # Generate output
     # Handle the date mapping for predictions
     if split - PREDICT_SIZE <= 0: 
@@ -175,20 +181,15 @@ def generate_output(stock_name, predictions, stock_data, id_name_map, split, sto
     # Format the predictions into the desired output.
     output = []
     predict_date = stock_data['Date'].iloc[-split-1]
-    # Convert id_name_map to dictionary for faster lookups
-    name_to_id = id_name_map.set_index('Stock_Name')['Stock_ID'].to_dict()
     # Get stock_id using the dictionary; if not found, raise an error
-    if stock not in name_to_id:
-        raise ValueError(f"Stock name {stock} not found in id_name_map")
-    stock_id = int(name_to_id[stock])
     
     for _, row in combined_df.iterrows():
-        date = row[0]
-        pred_value = round(row[1], 2)
+        date = row.iloc[0]
+        pred_value = round(row.iloc[1], 2)
         output.append([predict_date, stock_id, date, pred_value])
             
     output_df = pd.DataFrame(output, columns=["Predict_Date", "Stock_ID", "Date", "Closing_Price"])
-    output_df.to_csv(path+stock_name+".csv", mode='a', header=not os.path.exists(path+stock_name+".csv"))
+    output_df.to_csv(filepath+filename+".csv", mode='a', header=not os.path.exists(filepath+filename+".csv"))
 
 def finalize_csv(csv_path):
     final_df = pd.read_csv(csv_path)
@@ -200,21 +201,6 @@ def finalize_csv(csv_path):
     final_df.reset_index(inplace=True)
     final_df.rename(columns={'index': 'Order_ID'}, inplace=True)
     final_df.to_csv(csv_path, index=False)
-
-def split_data(stock_data):
-    # Separate the 'Date' column
-    dates = pd.to_datetime(stock_data['Date'])
-
-    # Use only 'Close' prices for modeling
-    close_prices = stock_data['Close']
-
-    # Convert the 'Close' prices to a TimeSeries object
-    series = TimeSeries.from_series(close_prices)
-
-    # Split the time series into training and validation sets
-    # The last 60 data points will be used for the validation set
-    train, val = series[:-60], series[-60:]
-    return train, val, dates, series
 
 def arima_prediction(train, val):
     # Create and fit an ARIMA model
@@ -246,7 +232,6 @@ def moving_average(stock):
 
         output.to_csv(f'{PARAMETER_PATH}/{stock}/Moving Average/window_size_{size}.csv')
     print("Finished caculate Moving Average for ", stock)
-
 
 def directional_accuracy(actual, forecasted):
     # Extract values from TimeSeries objects for computation
@@ -363,8 +348,7 @@ def stock_tuning(stock_name, features):
         os.makedirs(PARAMETER_PATH + stock_name) 
     
     print(f"Tuning {stock_name} ...")
-    stock_data, id_name_map, data_df, news_df = load_data(stock_name)
-    
+ 
     for model_type, params_grid in MODEL_PARAM.items():
         for params in ParameterGrid(params_grid):
             if model_type == 'TransformerModel':
@@ -373,34 +357,45 @@ def stock_tuning(stock_name, features):
                 model = BlockRNNModel(**params)
             elif model_type == 'NBEATSModel':
                 model = NBEATSModel(**params)
+            elif model_type == 'XGBModel':
+                model = XGBModel(**params)
+
+            generate_path = PARAMETER_PATH+f"{stock_name}/"
+            if 1 in features:
+                generate_path = generate_path+"/Fundamental"
+            if 2 in features:
+                generate_path = generate_path+"+LDA News"
+            if 3 in features:
+                generate_path = generate_path+"+LDA Twitter"
+            if 4 in features:
+                generate_path = generate_path+"+GDELT V1"
+            if 5 in features:
+                generate_path = generate_path+"+GDELT V2"
+                
+            if not os.path.exists(generate_path):
+                os.makedirs(generate_path) 
+
+            # Generate a filename from parameters
+            params_str = '_'.join(f"{key}{val}" for key, val in params.items())
+            filename = f"{model_type}_{params_str}"
+
+            if os.path.exists(generate_path+"/"+filename+".csv"):
+                continue
 
             # Loop over the data for each day in the sliding window
-            for split in range(MAX_SPLIT_SIZE, 0, -1):
+            for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE+1, -1):
+                
                 # Load data   
-                stock_data, id_name_map, data_df, news_df = load_data(stock_name)
+                stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
                 
                 # Preprocess data
-                training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, news_df, split, features)
+                training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features)
                 
                 # Perform hyperparameter tuning for the current day
                 # Predict
                 predictions = predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset)
-                
-                # Generate a filename from parameters
-                params_str = '_'.join(f"{key}{val}" for key, val in params.items())
-                filename = f"{model_type}_input_chunk_length3_output_chunk_length1_{params_str}"
-                
-                generate_path = PARAMETER_PATH+f"{stock_name}/"
-                if 1 in features:
-                    generate_path = generate_path+"/Fundamental"
-                if 2 in features:
-                    generate_path = generate_path+"+LDA News"
-                if 3 in features:
-                    generate_path = generate_path+"+LDA Twitter"
-                    
-                if not os.path.exists(generate_path):
-                    os.makedirs(generate_path) 
-                generate_output(filename, predictions, stock_data, id_name_map, split, stock_name, generate_path + "/")
+
+                generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
             finalize_csv(generate_path+"/"+filename+".csv")        
             #find_best_param(stock_name)
     print(f"Tuning completed for {stock_name}")
