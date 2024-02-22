@@ -264,83 +264,118 @@ def plot_graph(dates, series, val, arima_pred, new_model_pred):
     # Plot the forecasted values (including the last actual value for a smooth transition)
     plt.plot(dates[-61:], arima_pred_with_last, label='ARIMA Forecast', lw=2, color='red')
     plt.plot(dates[-61:], new_model_pred_with_last, label='New Model Forecast', lw=2, color='green')
-
-
     plt.title('Stock Price Prediction using ARIMA vs New Model')
     plt.xlabel('Date')
     plt.ylabel('Price')
     plt.legend(loc='upper left', bbox_to_anchor=(1,1))
     plt.show()
 
-def cal_err_and_acc(val, predicted, condition=True):
-    val = val.pd_dataframe()
-    val.reset_index(drop=True, inplace=True)
-    predicted = predicted.pd_dataframe()
-    predicted.reset_index(drop=True, inplace=True)
-    val_ts = TimeSeries.from_dataframe(val)
-    predicted_ts = TimeSeries.from_dataframe(predicted)
+def calculate_directional_accuracy(actual, forecast):
+    return 0
 
-    mape_error = mape(val_ts, predicted_ts)
-    rmse_error = np.sqrt(mse(val_ts, predicted_ts))
-    dir_acc = directional_accuracy(val_ts, predicted_ts)
+def calculate_mape(actual, forecast):
+    """Calculate Mean Absolute Percentage Error."""
+    actual, forecast = np.array(actual), np.array(forecast)
+    return np.mean(np.abs((actual - forecast) / actual)) * 100
+
+def calculate_rmse(actual, forecast):
+    """Calculate Root Mean Square Error."""
+    actual, forecast = np.array(actual), np.array(forecast)
+    mse = np.mean((forecast - actual) ** 2)
+    return np.sqrt(mse)
+
+def cal_err_and_acc(predicted_ts, val_ts, condition=True):
+    val = val_ts.pd_dataframe()
+    predicted = predicted_ts.pd_dataframe()
+
+    val.reset_index(drop=True, inplace=True)
+    predicted.reset_index(drop=True, inplace=True)
+
+    actual = val['Close']
+    forecast = predicted['Closing_Price']
+    
+    mape_error = calculate_mape(actual.iloc[1:], forecast)
+    rmse_error = calculate_rmse(actual.iloc[1:], forecast)
+    dir_acc = calculate_directional_accuracy(actual, forecast)
+    
     if condition:
         return mape_error, rmse_error, dir_acc
     else:
-        print(f"Directional Accuracy = {dir_acc:.2f} %")
         print(f"MAPE = {mape_error:.2f} %")
         print(f"RMSE = {rmse_error:.2f} %\n")
+        print(f"Directional Accuracy = {dir_acc:.2f} %")
 
 def find_best_param(stock_name):
     path = PARAMETER_PATH + stock_name
+    overall_best_params = []
     all_dir = os.listdir(path)
+
     for folder_list in all_dir:
-        if folder_list == ".DS_Store":
+        if folder_list == ".DS_Store" or folder_list == "best_param_overall.csv":
             continue
-        best_params_by_dir = {'param': None, 'da': 0, 'mape': float('inf'), 'rmse': float('inf')}
-        best_params_by_mape = {'param': None, 'da': 0, 'mape': float('inf'), 'rmse': float('inf')}
-        best_params_by_rmse = {'param': None, 'da': 0, 'mape': float('inf'), 'rmse': float('inf')}
+
+        best_params_by_mape = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da': 0}
+        best_params_by_rmse = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da': 0}
+        best_params_by_dir = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da': 0}
+        results = []
+        
         check_path = path + "/" + folder_list
         dir_list = os.listdir(check_path)
         for param_file in dir_list:
-            # Skip non-CSV files
-            if not param_file.endswith('.csv'):
+            if param_file == ".DS_Store" or param_file == "all_result.csv" or param_file == "best_parameters.txt":
                 continue
-            # Read the file
+            
             predict = pd.read_csv(check_path + '/' + param_file)
             predict_ts = TimeSeries.from_dataframe(predict[['Closing_Price']], time_col=None)
             val = pd.read_csv(DATA_PATH + stock_name + ".csv")
-            val = val[['Close']].iloc[-MAX_SPLIT_SIZE:]
+            val = val[['Close']].iloc[-TEST_SIZE-1:]
             val_ts = TimeSeries.from_dataframe(val, time_col=None)    
 
             avg_mape, avg_rmse, avg_dir = cal_err_and_acc(predict_ts, val_ts, True)
+            results.append({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
 
             # Update best parameters
             if avg_dir > best_params_by_dir['da']:
-                best_params_by_dir.update({'param': param_file, 'da': avg_dir, 'mape': avg_mape, 'rmse': avg_rmse})
+                best_params_by_dir.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
             if avg_mape < best_params_by_mape['mape']:
-                best_params_by_mape.update({'param': param_file, 'da': avg_dir, 'mape': avg_mape, 'rmse': avg_rmse})
+                best_params_by_mape.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
             if avg_rmse < best_params_by_rmse['rmse']:
-                best_params_by_rmse.update({'param': param_file, 'da': avg_dir, 'mape': avg_mape, 'rmse': avg_rmse})
+                best_params_by_rmse.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
+
+        results_df = pd.DataFrame(results)
+        results_df = results_df.round(2)
+        results_df.sort_values(by=['param'], inplace=True)  # Sort by MAPE for ordered results
+        results_df.to_csv(check_path + '/all_result.csv', index=False)
+
+        overall_best_params.append({'Features': folder_list, **best_params_by_mape})
 
         # Save the best parameters to a text file
         with open(check_path + '/best_parameters.txt', 'w') as f:
-            f.write("Best Dir Param:\n")
-            f.write(f"Param: {best_params_by_dir['param']}\n")
-            f.write(f"Dir: {round(best_params_by_dir['da'], 2)}\n")
-            f.write(f"MAPE: {round(best_params_by_dir['mape'], 2)}\n")
-            f.write(f"RMSE: {round(best_params_by_dir['rmse'], 2)}\n\n")
-
             f.write("Best MAPE Param:\n")
             f.write(f"Param: {best_params_by_mape['param']}\n")
-            f.write(f"Dir: {round(best_params_by_mape['da'], 2)}\n")
             f.write(f"MAPE: {round(best_params_by_mape['mape'], 2)}\n")
-            f.write(f"RMSE: {round(best_params_by_mape['rmse'], 2)}\n\n")
+            f.write(f"RMSE: {round(best_params_by_mape['rmse'], 2)}\n")
+            f.write(f"Dir: {round(best_params_by_mape['da'], 2)}\n\n")
 
             f.write("Best RMSE Param:\n")
             f.write(f"Param: {best_params_by_rmse['param']}\n")
-            f.write(f"Dir: {round(best_params_by_rmse['da'], 2)}\n")
             f.write(f"MAPE: {round(best_params_by_rmse['mape'], 2)}\n")
-            f.write(f"RMSE: {round(best_params_by_rmse['rmse'], 2)}\n")        
+            f.write(f"RMSE: {round(best_params_by_rmse['rmse'], 2)}\n")  
+            f.write(f"Dir: {round(best_params_by_rmse['da'], 2)}\n\n")
+
+
+            f.write("Best Dir Param:\n")
+            f.write(f"Param: {best_params_by_dir['param']}\n")
+            f.write(f"MAPE: {round(best_params_by_dir['mape'], 2)}\n")
+            f.write(f"RMSE: {round(best_params_by_dir['rmse'], 2)}\n")  
+            f.write(f"Dir: {round(best_params_by_dir['da'], 2)}\n\n")
+        
+    overall_best_df = pd.DataFrame(overall_best_params)
+    overall_best_df = overall_best_df.round(2)
+    overall_best_df.sort_values(by=['Features'], inplace=True)
+    overall_best_df.to_csv(path + '/best_param_overall.csv', index=False)    
+
+    print("Finished find best parameter for ", stock_name)    
     
 def stock_tuning(stock_name, features):
     # Check if the daily tuning results file exists and remove it if it does
@@ -383,7 +418,7 @@ def stock_tuning(stock_name, features):
                 continue
 
             # Loop over the data for each day in the sliding window
-            for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE+1, -1):
+            for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
                 
                 # Load data   
                 stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
