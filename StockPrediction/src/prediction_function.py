@@ -47,8 +47,8 @@ MODEL_PARAM = {
     # }
 
     'XGBModel': {
-        'lags': [1,3,5], 
-        'lags_past_covariates': [1,3,5], 
+        'lags': [1, 5, 10], 
+        'lags_past_covariates': [1, 5, 10], 
         'output_chunk_length': [1], 
     }
 }
