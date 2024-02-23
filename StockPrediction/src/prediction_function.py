@@ -15,6 +15,8 @@ ORIGINAL_DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA/
 DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA_WEEKLY/'
 LDA_NEWS_PATH = os.getcwd() + '/data/Online Data/LDA News/News.csv'
 LDA_TWITTER_PATH = os.getcwd() + '/data/Online Data/LDA Twitter/Twitter.csv'
+GDELT_V1_PATH = os.getcwd() + '/data/Online Data/GDELT V1/gdelt_v1.csv'
+GDELT_V2_PATH = os.getcwd() + '/data/Online Data/GDELT V2/gdelt_v2.csv'
 ID_PATH = os.getcwd() + '/data/Fundamental+Technical Data/ID_Name.csv'
 RESULT_PATH = os.getcwd() + '/result/'
 PARAMETER_PATH = os.getcwd() + '/model/'
@@ -48,8 +50,8 @@ MODEL_PARAM = {
     # }
 
     'XGBModel': {
-        'lags': [1, 5, 10], 
-        'lags_past_covariates': [1, 5, 10], 
+        'lags': [2, 6, 10], 
+        'lags_past_covariates': [2, 6, 10], 
         'output_chunk_length': [1], 
     }
 }
@@ -78,36 +80,36 @@ def load_data(stock_name):
     industry_name = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Industry_Name'].iloc[0]
     lda_news_df = pd.read_csv(LDA_NEWS_PATH)
     lda_twitter_df = pd.read_csv(LDA_TWITTER_PATH)
-    GDELTv1 = ""
-    GDELTv2 = ""
+    GDELTv1 = pd.read_csv(GDELT_V1_PATH)
+    GDELTv2 = "" # pd.read_csv(GDELT_V2_PATH)
     data_df = stock_data.copy()
     return stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2
 
-def preprocess_lda_news(data_df, lda_news_df):
+def preprocess_online_data(data_df, online_data_df):
     data_df['Date'] = pd.to_datetime(data_df['Date'])
-    lda_news_df['Date'] = pd.to_datetime(lda_news_df['Date'])
+    online_data_df['Date'] = pd.to_datetime(online_data_df['Date'])
     
     # Set 'Date' as index after conversion
     data_df.set_index('Date', inplace=True)
-    lda_news_df.set_index('Date', inplace=True)
+    online_data_df.set_index('Date', inplace=True)
     
     # Remove news data after the last date in data_df
     last_data_date = data_df.index.max()
-    lda_news_df = lda_news_df[lda_news_df.index <= last_data_date]
+    online_data_df = online_data_df[online_data_df.index <= last_data_date]
     
     # Prepare a DataFrame to collect summed news data
-    summed_news_df = pd.DataFrame(index=data_df.index.unique()).sort_index()
+    summed_df = pd.DataFrame(index=data_df.index.unique()).sort_index()
     
     # Sum news data forward to the nearest date in data_df
-    summed_news = lda_news_df.reindex(summed_news_df.index, method='ffill').fillna(0)
+    summed = online_data_df.reindex(summed_df.index, method='ffill').fillna(0)
     
     # Concatenate all columns at once
-    summed_news_df = pd.concat([summed_news_df, summed_news], axis=1)
+    summed_df = pd.concat([summed_df, summed], axis=1)
     
     # Reset index to bring 'Date' back as a column
-    summed_news_df.reset_index(inplace=True)
+    summed_df.reset_index(inplace=True)
 
-    return summed_news_df
+    return summed_df
 
 def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features):
     data = data.dropna()
@@ -115,8 +117,20 @@ def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv
     past_covariate = data[RETAIN_COMPONENTS].apply(pd.to_numeric, errors='coerce').ffill().bfill()
     
     if 2 in features:
-        updated_lda_news_df = preprocess_lda_news(data_df, lda_news_df)
+        updated_lda_news_df = preprocess_online_data(data_df, lda_news_df)
         past_covariate = past_covariate.join(updated_lda_news_df.reset_index().drop(columns='Date'))
+
+    if 3 in features:
+        updated_lda_twitter_df = preprocess_online_data(data_df, lda_twitter_df)
+        past_covariate = past_covariate.join(updated_lda_twitter_df.reset_index().drop(columns='Date'))
+
+    if 4 in features:
+        updated_GDELTv1 = preprocess_online_data(data_df, GDELTv1)
+        past_covariate = past_covariate.join(updated_GDELTv1.reset_index().drop(columns='Date'))
+
+    if 5 in features:
+        updated_GDELTv2 = preprocess_online_data(data_df, GDELTv2)
+        past_covariate = past_covariate.join(updated_GDELTv2.reset_index().drop(columns='Date'))
 
     serie_ts = TimeSeries.from_dataframe(serie.to_frame())
     past_cov_ts = TimeSeries.from_dataframe(past_covariate)
@@ -185,14 +199,55 @@ def finalize_csv(csv_path):
     final_df.rename(columns={'index': 'Order_ID'}, inplace=True)
     final_df.to_csv(csv_path, index=False)
 
-def arima_prediction(train, val):
-    # Create and fit an ARIMA model
-    model = ARIMA(p = 1, d = 1, q = 1)
-    model.fit(train)
+def arima_prediction(stock_name):
+    ARIMA_PARAM = {
+        'p': [6, 10], 
+        'd': [6, 10], 
+        'q': [2, 3], 
+    }
 
-    # Forecast the next steps (same size as the validation set, which is 60)
-    predicted = model.predict(len(val))
-    return predicted
+    if not os.path.exists(PARAMETER_PATH + stock_name):
+        os.makedirs(PARAMETER_PATH + stock_name) 
+    
+    print(f"Tuning {stock_name} with ARIMA ...")
+ 
+    for params in ParameterGrid(ARIMA_PARAM):
+        model = ARIMA(**params)
+
+        generate_path = PARAMETER_PATH+f"{stock_name}/ARIMA"
+            
+        if not os.path.exists(generate_path):
+            os.makedirs(generate_path) 
+
+        # Generate a filename from parameters
+        params_str = '_'.join(f"{key}{val}" for key, val in params.items())
+        filename = f"ARIMA_{params_str}"
+
+        if os.path.exists(generate_path+"/"+filename+".csv"):
+            continue
+
+        # Loop over the data for each day in the sliding window
+        for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
+            
+            # Load data   
+            stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
+            
+            # Preprocess data
+            training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, [1])
+            
+            # Perform hyperparameter tuning for the current day
+            # Predict
+            try:
+                model.fit(training_scaled)
+                forecast = model.predict(PREDICT_SIZE)
+                predictions = scaler_dataset.inverse_transform(forecast)
+            except Exception as e:
+                print(f"Error fitting ARIMA model with params {params}: {e}")
+
+            generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
+        finalize_csv(generate_path+"/"+filename+".csv")        
+    print(f"Tuning ARIMA completed for {stock_name}")
+    print("-----------------------------------------")
 
 def moving_average(stock):
     if not os.path.exists(f'{PARAMETER_PATH}/{stock}/Moving Average'):
@@ -314,7 +369,11 @@ def find_best_param(stock_name):
             val = val[['Close']].iloc[-TEST_SIZE-1:]
             val_ts = TimeSeries.from_dataframe(val, time_col=None)    
 
-            avg_mape, avg_rmse, avg_dir = cal_err_and_acc(predict_ts, val_ts, True)
+            try:
+                avg_mape, avg_rmse, avg_dir = cal_err_and_acc(predict_ts, val_ts, True)
+            except:
+                print("Error when calculate error in ", check_path)
+
             results.append({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
 
             # Update best parameters
@@ -366,7 +425,7 @@ def stock_tuning(stock_name, features):
     if not os.path.exists(PARAMETER_PATH + stock_name):
         os.makedirs(PARAMETER_PATH + stock_name) 
     
-    print(f"Tuning {stock_name} ...")
+    print(f"Tuning {stock_name} with {features} ...")
  
     for model_type, params_grid in MODEL_PARAM.items():
         for params in ParameterGrid(params_grid):
@@ -381,7 +440,7 @@ def stock_tuning(stock_name, features):
 
             generate_path = PARAMETER_PATH+f"{stock_name}/"
             if 1 in features:
-                generate_path = generate_path+"/Fundamental"
+                generate_path = generate_path+"Fundamental"
             if 2 in features:
                 generate_path = generate_path+"+LDA News"
             if 3 in features:

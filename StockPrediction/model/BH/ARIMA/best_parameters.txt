@@ -1,0 +1,18 @@
+Best MAPE Param:
+Param: ARIMA_d4_p4_q2.csv
+MAPE: 20.37
+RMSE: 53.59
+Dir: 0
+
+Best RMSE Param:
+Param: ARIMA_d4_p6_q2.csv
+MAPE: 20.44
+RMSE: 53.49
+Dir: 0
+
+Best Dir Param:
+Param: None
+MAPE: inf
+RMSE: inf
+Dir: 0
+

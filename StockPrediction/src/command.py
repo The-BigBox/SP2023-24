@@ -17,7 +17,10 @@ start_time = time.time()
 # cmd.stock_tuning(stock, [1])
 
 for stock in cmd.STOCK_LIST:
+    cmd.arima_prediction(stock)
+    cmd.stock_tuning(stock, [1])
     cmd.stock_tuning(stock, [1,2])
+    cmd.stock_tuning(stock, [1,3])
     cmd.find_best_param(stock)
 
 # cmd.stock_tuning("ADVANC", [1,2])
