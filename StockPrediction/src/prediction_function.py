@@ -210,6 +210,7 @@ def arima_prediction(stock_name):
         os.makedirs(PARAMETER_PATH + stock_name) 
     
     print(f"Tuning {stock_name} with ARIMA ...")
+    num_ex = 0
  
     for params in ParameterGrid(ARIMA_PARAM):
         model = ARIMA(**params)
@@ -225,6 +226,8 @@ def arima_prediction(stock_name):
 
         if os.path.exists(generate_path+"/"+filename+".csv"):
             continue
+
+        num_ex += 1
 
         # Loop over the data for each day in the sliding window
         for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
@@ -246,7 +249,7 @@ def arima_prediction(stock_name):
 
             generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
         finalize_csv(generate_path+"/"+filename+".csv")        
-    print(f"Tuning ARIMA completed for {stock_name}")
+    print(f"Completed ARIMA tune for {num_ex} parameters")  
     print("-----------------------------------------")
 
 def moving_average(stock):
@@ -424,6 +427,8 @@ def stock_tuning(stock_name, features):
     # Check if the daily tuning results file exists and remove it if it does
     if not os.path.exists(PARAMETER_PATH + stock_name):
         os.makedirs(PARAMETER_PATH + stock_name) 
+
+    num_ex = 0
     
     print(f"Tuning {stock_name} with {features} ...")
  
@@ -460,6 +465,8 @@ def stock_tuning(stock_name, features):
             if os.path.exists(generate_path+"/"+filename+".csv"):
                 continue
 
+            num_ex += 1
+
             # Loop over the data for each day in the sliding window
             for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
                 
@@ -474,6 +481,6 @@ def stock_tuning(stock_name, features):
                 predictions = predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset)
 
                 generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
-            finalize_csv(generate_path+"/"+filename+".csv")        
-    print(f"Tuning completed for {stock_name}")
+            finalize_csv(generate_path+"/"+filename+".csv") 
+    print(f"Completed tune for {num_ex} parameters with {features}")       
     print("-----------------------------------------")
