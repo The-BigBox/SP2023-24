@@ -337,7 +337,6 @@ def calculate_rmse(actual, forecast):
     mse = np.mean((forecast - actual) ** 2)
     return np.sqrt(mse)
 
-
 def cal_err_and_acc(predicted_ts, val_ts, condition=True):
     val = val_ts.pd_dataframe()
     predicted = predicted_ts.pd_dataframe()
