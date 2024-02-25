@@ -87,9 +87,9 @@ def load_data(stock_name):
     GDELTv1 = pd.read_csv(GDELT_V1_PATH)
     prefix = "gdeltv1"
     GDELTv1.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in GDELTv1.columns]
-    GDELTv2 = "" # pd.read_csv(GDELT_V2_PATH)
+    GDELTv2 = pd.read_csv(GDELT_V2_PATH)
     prefix = "gdeltv2"
-    # GDELTv2.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in GDELTv2.columns]
+    GDELTv2.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in GDELTv2.columns]
     data_df = stock_data.copy()
     return stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2
 

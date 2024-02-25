@@ -1,6 +1,8 @@
 Features,param,mape,rmse,da
 ARIMA,ARIMA_d6_p10_q2.csv,3.89,1.74,0
 Fundamental,XGBModel_lags6_lags_past_covariates6_output_chunk_length1.csv,3.28,1.62,0
+Fundamental+GDELT V1,XGBModel_lags6_lags_past_covariates6_output_chunk_length1.csv,3.57,1.61,0
+Fundamental+GDELT V2,XGBModel_lags2_lags_past_covariates6_output_chunk_length1.csv,3.42,1.65,0
 Fundamental+LDA News,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,3.46,1.56,0
 Fundamental+LDA News+LDA Twitter,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,4.13,1.82,0
 Fundamental+LDA News+LDA Twitter+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,4.22,1.92,0
