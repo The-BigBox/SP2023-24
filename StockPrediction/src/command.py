@@ -1,6 +1,8 @@
 import prediction_function as cmd
 import time
 
+num_ex = 0
+
 def cal_execution_time(start_time):
     end_time = time.time()
     execution_time = end_time - start_time
@@ -46,7 +48,8 @@ def get_features_list():
         return get_features_list()
     return features_list
 
-def execute_command(command, stock):
+def execute_command(command, stock, features):
+    global num_ex
     if command == "1":
         cmd.convert_weekly_data(stock)
     elif command == "2":
@@ -54,8 +57,7 @@ def execute_command(command, stock):
     elif command == "3":
         cmd.arima_prediction(stock)
     elif command == "4":
-        features = get_features_list()
-        cmd.stock_tuning(stock, features)
+        num_ex += cmd.stock_tuning(stock, features)
     elif command == "5":
         cmd.find_best_param(stock)
 
@@ -63,11 +65,16 @@ def main():
     start_time = time.time()
     command = get_valid_command()
     stock = get_valid_stock()
+    features = ""
+    if command == "4":
+        features = get_features_list()
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
-            execute_command(command, each_stock)
+            execute_command(command, each_stock, features)
     else:
         execute_command(command, stock)
+    if command == "4":
+        print(f"--> Summing number of experiment: {num_ex} <--")
     cal_execution_time(start_time)
     print("-----------------------------------------")
 

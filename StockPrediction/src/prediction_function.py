@@ -494,5 +494,6 @@ def stock_tuning(stock_name, features):
 
                 generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
             finalize_csv(generate_path+"/"+filename+".csv") 
-    print(f"Completed tune for {num_ex} parameters with {features}")       
+    print(f"Completed tune for {num_ex} parameters")       
     print("-----------------------------------------")
+    return num_ex
