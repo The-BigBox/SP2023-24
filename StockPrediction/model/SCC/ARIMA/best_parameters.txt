@@ -1,13 +1,13 @@
 Best MAPE Param:
-Param: ARIMA_d6_p6_q2.csv
-MAPE: 13.48
-RMSE: 47.72
+Param: ARIMA_d6_p6_q3.csv
+MAPE: 2.65
+RMSE: 11.78
 Dir: 0
 
 Best RMSE Param:
 Param: ARIMA_d6_p6_q3.csv
-MAPE: 13.51
-RMSE: 46.85
+MAPE: 2.65
+RMSE: 11.78
 Dir: 0
 
 Best Dir Param:

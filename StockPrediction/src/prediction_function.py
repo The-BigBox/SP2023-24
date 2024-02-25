@@ -79,18 +79,26 @@ def load_data(stock_name):
     stock_id = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Stock_ID'].iloc[0]
     industry_name = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Industry_Name'].iloc[0]
     lda_news_df = pd.read_csv(LDA_NEWS_PATH)
+    prefix = "news"
+    lda_news_df.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in lda_news_df.columns]
     lda_twitter_df = pd.read_csv(LDA_TWITTER_PATH)
+    prefix = "twitter"
+    lda_twitter_df.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in lda_twitter_df.columns]
     GDELTv1 = pd.read_csv(GDELT_V1_PATH)
+    prefix = "gdeltv1"
+    GDELTv1.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in GDELTv1.columns]
     GDELTv2 = "" # pd.read_csv(GDELT_V2_PATH)
+    prefix = "gdeltv2"
+    # GDELTv2.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in GDELTv2.columns]
     data_df = stock_data.copy()
     return stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2
 
 def preprocess_online_data(data_df, online_data_df):
-    data_df['Date'] = pd.to_datetime(data_df['Date'])
+    if 'Date' in data_df.columns:
+        data_df['Date'] = pd.to_datetime(data_df['Date'])
+        data_df.set_index('Date', inplace=True)
+
     online_data_df['Date'] = pd.to_datetime(online_data_df['Date'])
-    
-    # Set 'Date' as index after conversion
-    data_df.set_index('Date', inplace=True)
     online_data_df.set_index('Date', inplace=True)
     
     # Remove news data after the last date in data_df
@@ -118,19 +126,19 @@ def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv
     
     if 2 in features:
         updated_lda_news_df = preprocess_online_data(data_df, lda_news_df)
-        past_covariate = past_covariate.join(updated_lda_news_df.reset_index().drop(columns='Date'))
+        past_covariate = past_covariate.join(updated_lda_news_df.reset_index(drop=True).drop(columns='Date'))
 
     if 3 in features:
         updated_lda_twitter_df = preprocess_online_data(data_df, lda_twitter_df)
-        past_covariate = past_covariate.join(updated_lda_twitter_df.reset_index().drop(columns='Date'))
+        past_covariate = past_covariate.join(updated_lda_twitter_df.reset_index(drop=True).drop(columns='Date'))
 
     if 4 in features:
         updated_GDELTv1 = preprocess_online_data(data_df, GDELTv1)
-        past_covariate = past_covariate.join(updated_GDELTv1.reset_index().drop(columns='Date'))
+        past_covariate = past_covariate.join(updated_GDELTv1.reset_index(drop=True).drop(columns='Date'))
 
     if 5 in features:
         updated_GDELTv2 = preprocess_online_data(data_df, GDELTv2)
-        past_covariate = past_covariate.join(updated_GDELTv2.reset_index().drop(columns='Date'))
+        past_covariate = past_covariate.join(updated_GDELTv2.reset_index(drop=True).drop(columns='Date'))
 
     serie_ts = TimeSeries.from_dataframe(serie.to_frame())
     past_cov_ts = TimeSeries.from_dataframe(past_covariate)
@@ -315,15 +323,20 @@ def calculate_directional_accuracy(actual, forecast):
     return 0
 
 def calculate_mape(actual, forecast):
-    """Calculate Mean Absolute Percentage Error."""
+    """Calculate Mean Absolute Percentage Error, handling zeros in actual values."""
     actual, forecast = np.array(actual), np.array(forecast)
-    return np.mean(np.abs((actual - forecast) / actual)) * 100
+    non_zero_actual = np.where(actual == 0, np.nan, actual)  # Replace zeros with NaN
+    mape = np.mean(np.abs((actual - forecast) / non_zero_actual)) * 100
+    return np.nanmean(mape)
 
 def calculate_rmse(actual, forecast):
     """Calculate Root Mean Square Error."""
     actual, forecast = np.array(actual), np.array(forecast)
+    if len(actual) != len(forecast):
+        raise ValueError("The length of actual and forecast arrays must match.")
     mse = np.mean((forecast - actual) ** 2)
     return np.sqrt(mse)
+
 
 def cal_err_and_acc(predicted_ts, val_ts, condition=True):
     val = val_ts.pd_dataframe()
@@ -369,13 +382,13 @@ def find_best_param(stock_name):
             predict = pd.read_csv(check_path + '/' + param_file)
             predict_ts = TimeSeries.from_dataframe(predict[['Closing_Price']], time_col=None)
             val = pd.read_csv(DATA_PATH + stock_name + ".csv")
-            val = val[['Close']].iloc[-TEST_SIZE-1:]
+            val = val[['Close']].iloc[-VALIDATE_SIZE-TEST_SIZE-1:-TEST_SIZE]
             val_ts = TimeSeries.from_dataframe(val, time_col=None)    
 
             try:
                 avg_mape, avg_rmse, avg_dir = cal_err_and_acc(predict_ts, val_ts, True)
-            except:
-                print("Error when calculate error in ", check_path)
+            except Exception as e:
+                print(f"Error {e} when calculate error in {check_path}")
 
             results.append({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
 

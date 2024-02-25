@@ -1,0 +1,10 @@
+param,mape,rmse,da
+XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,3.03,0.99,0
+XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.36,1.06,0
+XGBModel_lags10_lags_past_covariates6_output_chunk_length1.csv,3.27,1.04,0
+XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,3.01,0.99,0
+XGBModel_lags2_lags_past_covariates2_output_chunk_length1.csv,3.41,1.02,0
+XGBModel_lags2_lags_past_covariates6_output_chunk_length1.csv,2.95,0.95,0
+XGBModel_lags6_lags_past_covariates10_output_chunk_length1.csv,3.01,0.99,0
+XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.56,1.08,0
+XGBModel_lags6_lags_past_covariates6_output_chunk_length1.csv,3.02,0.96,0

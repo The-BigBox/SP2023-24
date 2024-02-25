@@ -1,13 +1,13 @@
 Best MAPE Param:
-Param: XGBModel_lags2_lags_past_covariates2_output_chunk_length1.csv
-MAPE: 22.06
-RMSE: 4.68
+Param: XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv
+MAPE: 2.41
+RMSE: 0.82
 Dir: 0
 
 Best RMSE Param:
-Param: XGBModel_lags2_lags_past_covariates2_output_chunk_length1.csv
-MAPE: 22.06
-RMSE: 4.68
+Param: XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv
+MAPE: 2.43
+RMSE: 0.82
 Dir: 0
 
 Best Dir Param:
