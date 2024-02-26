@@ -1,4 +1,5 @@
 import prediction_function as cmd
+from datetime import datetime
 import time
 
 num_ex = 0
@@ -10,6 +11,9 @@ def cal_execution_time(start_time):
     minutes = int((execution_time % 3600) // 60)
     seconds = int(execution_time % 60)
     print(f"--> Process in {hours} hrs {minutes} min {seconds} sec <--")
+    now = datetime.now()
+    print("End date and time:", now)
+
 
 def get_valid_command():
     print("-----------------------------------------")
@@ -62,10 +66,12 @@ def execute_command(command, stock, features):
         cmd.find_best_param(stock)
 
 def main():
-    start_time = time.time()
     command = get_valid_command()
     stock = get_valid_stock()
     features = []
+    start_time = time.time()    
+    now = datetime.now()
+    print("Start date and time:", now)
     if command == "4":
         features = get_features_list()
     if stock == "ALL":
