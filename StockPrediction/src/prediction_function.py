@@ -60,10 +60,7 @@ def convert_weekly_data(stock_name):
     if not os.path.exists(DATA_PATH):
         os.makedirs(DATA_PATH) 
     
-    # Read the data, initially parsing dates as objects
     stock_data = pd.read_csv(ORIGINAL_DATA_PATH + stock_name + ".csv")
-    
-    # Convert the 'Date' column to datetime using the specified format
     stock_data['Date'] = pd.to_datetime(stock_data['Date'])
     
     # Select every 7th data point from stock data
@@ -73,7 +70,6 @@ def convert_weekly_data(stock_name):
     print("Converted to weekly for ", stock_name)
       
 def load_data(stock_name):
-    # Read the data, initially parsing dates as objects
     stock_data = pd.read_csv(os.path.join(DATA_PATH, (stock_name + ".csv")))
     id_name_map = pd.read_csv(ID_PATH)
     stock_id = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Stock_ID'].iloc[0]
@@ -105,16 +101,9 @@ def preprocess_online_data(data_df, online_data_df):
     last_data_date = data_df.index.max()
     online_data_df = online_data_df[online_data_df.index <= last_data_date]
     
-    # Prepare a DataFrame to collect summed news data
     summed_df = pd.DataFrame(index=data_df.index.unique()).sort_index()
-    
-    # Sum news data forward to the nearest date in data_df
     summed = online_data_df.reindex(summed_df.index, method='ffill').fillna(0)
-    
-    # Concatenate all columns at once
     summed_df = pd.concat([summed_df, summed], axis=1)
-    
-    # Reset index to bring 'Date' back as a column
     summed_df.reset_index(inplace=True)
 
     return summed_df
@@ -153,19 +142,16 @@ def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv
     return training_scaled, past_cov_ts, scaler_dataset
 
 def predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset):
-    """Predict next n days' closing prices for each stock."""
     model.fit(training_scaled, past_covariates=past_cov_ts, verbose=True)
     forecast = model.predict(PREDICT_SIZE, verbose=True)
     in_forecast = scaler_dataset.inverse_transform(forecast)
     return in_forecast
 
 def generate_output(filename, predictions, stock_data, stock_id, split, stock, filepath):
-    # Generate output
-    # Handle the date mapping for predictions
     if split - PREDICT_SIZE <= 0: 
         last_known_date = pd.to_datetime(stock_data['Date'].iloc[-1], dayfirst=True)
         
-        if split == 0:  # Add this condition
+        if split == 0:
             difference = PREDICT_SIZE
             future_dates = [(last_known_date + pd.Timedelta(days=i+1)).strftime('%-d/%-m/%Y') for i in range(difference)]
             date = future_dates
@@ -180,13 +166,10 @@ def generate_output(filename, predictions, stock_data, stock_id, split, stock, f
     date_df = pd.DataFrame(date, columns=['Date'])
     combined_df = pd.concat([date_df, prediction_df], axis=1).reset_index(drop=True)
     
-    # Fill missing values in predictions
     combined_df.fillna(0, inplace=True)
     
-    # Format the predictions into the desired output.
     output = []
     predict_date = stock_data['Date'].iloc[-split-1]
-    # Get stock_id using the dictionary; if not found, raise an error
     
     for _, row in combined_df.iterrows():
         date = row.iloc[0]
@@ -199,7 +182,6 @@ def generate_output(filename, predictions, stock_data, stock_id, split, stock, f
 def finalize_csv(csv_path):
     final_df = pd.read_csv(csv_path)
     
-    # Drop old index column if it exists
     if 'Unnamed: 0' in final_df.columns:
         final_df.drop('Unnamed: 0', axis=1, inplace=True)
     
@@ -228,7 +210,6 @@ def arima_prediction(stock_name):
         if not os.path.exists(generate_path):
             os.makedirs(generate_path) 
 
-        # Generate a filename from parameters
         params_str = '_'.join(f"{key}{val}" for key, val in params.items())
         filename = f"ARIMA_{params_str}"
 
@@ -237,17 +218,10 @@ def arima_prediction(stock_name):
 
         num_ex += 1
 
-        # Loop over the data for each day in the sliding window
         for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
-            
-            # Load data   
             stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
-            
-            # Preprocess data
             training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, [1])
-            
-            # Perform hyperparameter tuning for the current day
-            # Predict
+
             try:
                 model.fit(training_scaled)
                 forecast = model.predict(PREDICT_SIZE)
@@ -283,19 +257,15 @@ def moving_average(stock):
     print("Finished caculate Moving Average for ", stock)
 
 def directional_accuracy(actual, forecasted):
-    # Extract values from TimeSeries objects for computation
     actual = actual.values().flatten()
     forecasted = forecasted.values().flatten()
     
-    # Calculate day-to-day differences
     actual_diff = actual[1:] - actual[:-1]
     forecasted_diff = forecasted[1:] - forecasted[:-1]
 
-    # Calculate the sign of the differences
     actual_sign = np.sign(actual_diff)
     forecasted_sign = np.sign(forecasted_diff)
 
-    # Calculate number of days where the direction matches
     matches = (actual_sign == forecasted_sign).sum()
 
     return matches / len(actual_diff) * 100
@@ -306,11 +276,9 @@ def plot_graph(dates, series, val, arima_pred, new_model_pred):
     plt.plot(dates[-60:], val.values(), label='Actual (Last 60 days)', color='blue')
     
     last_actual_value = series.values()[-61]
-    # Append the last actual value to the beginning of the prediction series
     arima_pred_with_last = np.insert(arima_pred.values(), 0, last_actual_value)
     new_model_pred_with_last = np.insert(new_model_pred.values(), 0, last_actual_value)
 
-    # Plot the forecasted values (including the last actual value for a smooth transition)
     plt.plot(dates[-61:], arima_pred_with_last, label='ARIMA Forecast', lw=2, color='red')
     plt.plot(dates[-61:], new_model_pred_with_last, label='New Model Forecast', lw=2, color='green')
     plt.title('Stock Price Prediction using ARIMA vs New Model')
@@ -323,14 +291,12 @@ def calculate_directional_accuracy(actual, forecast):
     return 0
 
 def calculate_mape(actual, forecast):
-    """Calculate Mean Absolute Percentage Error, handling zeros in actual values."""
     actual, forecast = np.array(actual), np.array(forecast)
-    non_zero_actual = np.where(actual == 0, np.nan, actual)  # Replace zeros with NaN
+    non_zero_actual = np.where(actual == 0, np.nan, actual)
     mape = np.mean(np.abs((actual - forecast) / non_zero_actual)) * 100
     return np.nanmean(mape)
 
 def calculate_rmse(actual, forecast):
-    """Calculate Root Mean Square Error."""
     actual, forecast = np.array(actual), np.array(forecast)
     if len(actual) != len(forecast):
         raise ValueError("The length of actual and forecast arrays must match.")
@@ -391,7 +357,6 @@ def find_best_param(stock_name):
 
             results.append({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
 
-            # Update best parameters
             if avg_dir > best_params_by_dir['da']:
                 best_params_by_dir.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
             if avg_mape < best_params_by_mape['mape']:
@@ -406,7 +371,6 @@ def find_best_param(stock_name):
 
         overall_best_params.append({'Features': folder_list, **best_params_by_mape})
 
-        # Save the best parameters to a text file
         with open(check_path + '/best_parameters.txt', 'w') as f:
             f.write("Best MAPE Param:\n")
             f.write(f"Param: {best_params_by_mape['param']}\n")
@@ -427,16 +391,42 @@ def find_best_param(stock_name):
             f.write(f"RMSE: {round(best_params_by_dir['rmse'], 2)}\n")  
             f.write(f"Dir: {round(best_params_by_dir['da'], 2)}\n\n")
         
+    custom_order = [
+        "Moving Average",
+        "ARIMA",
+        "Fundamental",
+        "Fundamental+LDA News",
+        "Fundamental+LDA Twitter",
+        "Fundamental+GDELT V1",
+        "Fundamental+GDELT V2",
+        "Fundamental+LDA News+LDA Twitter",
+        "Fundamental+LDA News+GDELT V1",
+        "Fundamental+LDA News+GDELT V2",
+        "Fundamental+LDA Twitter+GDELT V1",
+        "Fundamental+LDA Twitter+GDELT V2",
+        "Fundamental+GDELT V1+GDELT V2",
+        "Fundamental+LDA News+LDA Twitter+GDELT V1",
+        "Fundamental+LDA News+LDA Twitter+GDELT V2",
+        "Fundamental+LDA News+GDELT V1+GDELT V2",
+        "Fundamental+LDA Twitter+GDELT V1+GDELT V2",
+        "Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2"
+    ]
+
     overall_best_df = pd.DataFrame(overall_best_params)
     overall_best_df = overall_best_df.round(2)
-    overall_best_df.sort_values(by=['Features'], inplace=True)
-    overall_best_df.to_csv(path + '/best_param_overall.csv', index=False)    
+    order_mapping = {feature: i for i, feature in enumerate(custom_order)}
+    overall_best_df['sort_order'] = overall_best_df['Features'].map(order_mapping)
+    sorted_df = pd.DataFrame(index=range(len(custom_order))) 
+    sorted_df = sorted_df.merge(overall_best_df, left_index=True, right_on='sort_order', how='left')
+    sorted_df.drop('sort_order', axis=1, inplace=True)
+    sorted_df = sorted_df.astype(object)
+    sorted_df.fillna('', inplace=True)
+    sorted_df.to_csv(path + '/best_param_overall.csv', index=False)    
 
     print("Finished find best parameter for ", stock_name)    
     print("-----------------------------------------")
     
 def stock_tuning(stock_name, features):
-    # Check if the daily tuning results file exists and remove it if it does
     if not os.path.exists(PARAMETER_PATH + stock_name):
         os.makedirs(PARAMETER_PATH + stock_name) 
 
@@ -470,7 +460,6 @@ def stock_tuning(stock_name, features):
             if not os.path.exists(generate_path):
                 os.makedirs(generate_path) 
 
-            # Generate a filename from parameters
             params_str = '_'.join(f"{key}{val}" for key, val in params.items())
             filename = f"{model_type}_{params_str}"
 
@@ -479,19 +468,10 @@ def stock_tuning(stock_name, features):
 
             num_ex += 1
 
-            # Loop over the data for each day in the sliding window
             for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
-                
-                # Load data   
                 stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
-                
-                # Preprocess data
                 training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features)
-                
-                # Perform hyperparameter tuning for the current day
-                # Predict
                 predictions = predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset)
-
                 generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
             finalize_csv(generate_path+"/"+filename+".csv") 
     print(f"Completed tune for {num_ex} parameters")       

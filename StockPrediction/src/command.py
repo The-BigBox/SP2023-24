@@ -65,14 +65,14 @@ def main():
     start_time = time.time()
     command = get_valid_command()
     stock = get_valid_stock()
-    features = ""
+    features = []
     if command == "4":
         features = get_features_list()
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
             execute_command(command, each_stock, features)
     else:
-        execute_command(command, stock)
+        execute_command(command, stock, features)
     if command == "4":
         print(f"--> Summing number of experiment: {num_ex} <--")
     cal_execution_time(start_time)

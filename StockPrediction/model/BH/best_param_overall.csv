@@ -1,10 +1,19 @@
 Features,param,mape,rmse,da
-ARIMA,ARIMA_d4_p6_q2.csv,3.48,8.7,0
-Fundamental,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.36,9.42,0
-Fundamental+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.86,9.45,0
-Fundamental+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.68,10.36,0
-Fundamental+LDA News,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.86,10.43,0
-Fundamental+LDA News+LDA Twitter,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.91,10.56,0
-Fundamental+LDA News+LDA Twitter+GDELT V1,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.97,10.5,0
-Fundamental+LDA Twitter,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.24,8.64,0
-Moving Average,window_size_5.csv,5.17,12.65,0
+Moving Average,window_size_5.csv,5.17,12.65,0.0
+ARIMA,ARIMA_d4_p6_q2.csv,3.48,8.7,0.0
+Fundamental,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.36,9.42,0.0
+Fundamental+LDA News,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.86,10.43,0.0
+Fundamental+LDA Twitter,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.24,8.64,0.0
+Fundamental+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.86,9.45,0.0
+Fundamental+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.68,10.36,0.0
+Fundamental+LDA News+LDA Twitter,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.91,10.56,0.0
+Fundamental+LDA News+GDELT V1,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.99,10.48,0.0
+Fundamental+LDA News+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.88,10.38,0.0
+Fundamental+LDA Twitter+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.86,9.4,0.0
+Fundamental+LDA Twitter+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.71,10.4,0.0
+,,,,
+Fundamental+LDA News+LDA Twitter+GDELT V1,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.97,10.5,0.0
+,,,,
+,,,,
+,,,,
+,,,,
