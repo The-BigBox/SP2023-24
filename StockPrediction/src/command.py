@@ -22,19 +22,23 @@ def get_valid_command():
     print("3 : Tuning ARIMA")
     print("4 : Tuning machine learning")
     print("5 : Find best parameter")
+    print("6 : Merge best parameter")
+    print("7 : Get stock change weekly")
     print("-----------------------------------------")
     command = input("Enter the command: ")
-    if command not in ["1", "2", "3", "4", "5"]:
+    if command not in ["1", "2", "3", "4", "5", "6", "7"]:
         print("Invalid command. Please try again.")
         return get_valid_command()
     return command
 
-def get_valid_stock():
-    stock = input("Enter stock name (or 'ALL' for all stocks): ").upper()
-    print("-----------------------------------------")
-    if stock != "ALL" and stock not in cmd.STOCK_LIST:
-        print("Stock not found. Please try again.")
-        return get_valid_stock()
+def get_valid_stock(command):
+    stock = ""
+    if command != "6" and command != "7":
+        stock = input("Enter stock name (or 'ALL' for all stocks): ").upper()
+        print("-----------------------------------------")
+        if stock != "ALL" and stock not in cmd.STOCK_LIST:
+            print("Stock not found. Please try again.")
+            return get_valid_stock()
     return stock
 
 def get_features_list():
@@ -64,10 +68,14 @@ def execute_command(command, stock, features):
         num_ex += cmd.stock_tuning(stock, features)
     elif command == "5":
         cmd.find_best_param(stock)
+    elif command == "6":
+        cmd.merge_best_param()
+    elif command == "7":
+        cmd.get_stock_change()
 
 def main():
     command = get_valid_command()
-    stock = get_valid_stock()
+    stock = get_valid_stock(command)
     features = []
     start_time = time.time()    
     now = datetime.now()

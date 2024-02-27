@@ -1,4 +1,5 @@
 import os
+import csv
 import numpy as np
 import pandas as pd
 from darts import TimeSeries
@@ -28,12 +29,12 @@ TEST_SIZE = 35
 PREDICT_SIZE = 1
 STOCK_LIST = ["ADVANC", "BANPU", "BH", "BTS", "CBG", "CPALL", "CPF", "INTUCH", "IVL", "KBANK", "LH", "PTT", "PTTEP", "PTTGC", "SCB", "SCC", "TISCO", "TU", "WHA"]
 MODEL_PARAM = {
-    # 'TransformerModel': {
-    #     'input_chunk_length': [1,3,5], 
-    #     'output_chunk_length': [1], 
-    #     'n_epochs': [15],
-    #     # Add more Transformer-specific parameters if needed
-    # },
+    'TransformerModel': {
+        'input_chunk_length': [1,3,5], 
+        'output_chunk_length': [1], 
+        'n_epochs': [15],
+        # Add more Transformer-specific parameters if needed
+    },
     # 'BlockRNNModel': {
     #     'model': ['LSTM'],
     #     'input_chunk_length': [1,3,5], 
@@ -435,7 +436,60 @@ def find_best_param(stock_name):
 
     print("Finished find best parameter for ", stock_name)    
     print("-----------------------------------------")
-    
+
+def merge_best_param():
+    base_file_path = PARAMETER_PATH + '{name}/best_param_overall.csv'
+    output_file_path = PARAMETER_PATH + 'merged_output.csv'  # Replace with the actual output path
+    with open(output_file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+
+        for stock_name in STOCK_LIST:
+            file_path = base_file_path.format(name=stock_name)
+            header = f"{stock_name}"
+            try:
+                df = pd.read_csv(file_path)
+            except FileNotFoundError:
+                print(f"File not found for {stock_name}, skipping.")
+                continue
+            writer.writerow([header])
+            writer.writerow(df.columns.tolist())
+            for index, row in df.iterrows():
+                writer.writerow(row)
+    print(f"Data merged and saved to {output_file_path}")
+    print("-----------------------------------------")
+
+def get_stock_change():
+    results = []
+    for stock in STOCK_LIST:
+        data_path = f"{DATA_PATH}/{stock}.csv"
+        try:
+            data = pd.read_csv(data_path)
+        except FileNotFoundError:
+            print(f"File not found for {stock}, skipping.")
+            continue
+        close_prices = data['Close']
+        max_diff = max_diff_per = avg = 0
+        min_diff = min_diff_per = float('inf') 
+        for i in range (len(close_prices)-1):
+            diff = abs(close_prices[i+1]-close_prices[i])
+            diff_per = (diff/close_prices[i]) * 100
+            avg += (diff / close_prices[i]) * 100
+            if diff > max_diff:
+                max_diff = diff
+            if diff < min_diff and diff != 0:
+                min_diff = diff
+            if diff_per > max_diff_per:
+                max_diff_per = diff_per
+            if diff < min_diff_per and diff_per != 0:
+                min_diff_per = diff_per
+        avg_diff = avg/(len(close_prices)-1)
+        results.append([stock, round(max_diff, 2), round(min_diff, 2), round(avg_diff, 2), round(max_diff_per, 2), round(min_diff_per, 2)])
+
+    results_df = pd.DataFrame(results, columns=["Stock", "Max(Price)", "Min(Price)", "Average(%)", "Max(%)", "Min(%)"])
+    output_path = f"{DATA_PATH}../stock_price_changes_summary.csv"
+    results_df.to_csv(output_path, index=False)
+    print(f"Results saved to {output_path}")
+  
 def stock_tuning(stock_name, features):
     if not os.path.exists(PARAMETER_PATH + stock_name):
         os.makedirs(PARAMETER_PATH + stock_name) 
