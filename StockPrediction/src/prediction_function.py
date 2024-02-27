@@ -297,7 +297,7 @@ def calculate_directional_accuracy_with_thresholds(actual, forecast):
                 acc += 1
 
         da = round(acc / len(forecast) * 100, 2)
-        results.append((up, abs(down), da))
+        results.append((up, down, da))
     
     return results
 
@@ -344,9 +344,9 @@ def find_best_param(stock_name):
         if folder_list == ".DS_Store" or folder_list == "best_param_overall.csv":
             continue
 
-        best_params_by_mape = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da': 0}
-        best_params_by_rmse = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da': 0}
-        best_params_by_dir = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da': 0}
+        best_params_by_mape = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da[0:0]': 0}
+        best_params_by_rmse = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da[0:0]': 0}
+        best_params_by_dir = {'param': None, 'mape': float('inf'), 'rmse': float('inf'), 'da[0:0]': 0}
         results = []
         
         check_path = path + "/" + folder_list
@@ -366,18 +366,18 @@ def find_best_param(stock_name):
             except Exception as e:
                 print(f"Error {e} when calculate error in {check_path}")
 
-            results.append({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
+            results.append({f'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, **{f'da[{up}:{down}]': da for up, down, da in avg_dir}})
 
-            if avg_dir[0][2] > best_params_by_dir['da']:
-                best_params_by_dir.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
+            if avg_dir[0][2] > best_params_by_dir['da[0:0]']:
+                best_params_by_dir.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, **{f'da[{up}:{down}]': da for up, down, da in avg_dir}})
             if avg_mape < best_params_by_mape['mape']:
-                best_params_by_mape.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
+                best_params_by_mape.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, **{f'da[{up}:{down}]': da for up, down, da in avg_dir}})
             if avg_rmse < best_params_by_rmse['rmse']:
-                best_params_by_rmse.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
+                best_params_by_rmse.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, **{f'da[{up}:{down}]': da for up, down, da in avg_dir}})
 
         results_df = pd.DataFrame(results)
         results_df = results_df.round(2)
-        results_df.sort_values(by=['param'], inplace=True)  # Sort by MAPE for ordered results
+        results_df.sort_values(by=['param'], inplace=True)
         results_df.to_csv(check_path + '/all_result.csv', index=False)
 
         overall_best_params.append({'Features': folder_list, **best_params_by_mape})
@@ -387,20 +387,19 @@ def find_best_param(stock_name):
             f.write(f"Param: {best_params_by_mape['param']}\n")
             f.write(f"MAPE: {round(best_params_by_mape['mape'], 2)}\n")
             f.write(f"RMSE: {round(best_params_by_mape['rmse'], 2)}\n")
-            f.write(f"Dir: {round(best_params_by_mape['da'], 2)}\n\n")
+            f.write(f"Dir: {round(best_params_by_mape['da[0:0]'], 2)}\n\n")
 
             f.write("Best RMSE Param:\n")
             f.write(f"Param: {best_params_by_rmse['param']}\n")
             f.write(f"MAPE: {round(best_params_by_rmse['mape'], 2)}\n")
             f.write(f"RMSE: {round(best_params_by_rmse['rmse'], 2)}\n")  
-            f.write(f"Dir: {round(best_params_by_rmse['da'], 2)}\n\n")
-
+            f.write(f"Dir: {round(best_params_by_rmse['da[0:0]'], 2)}\n\n")
 
             f.write("Best Dir Param:\n")
             f.write(f"Param: {best_params_by_dir['param']}\n")
             f.write(f"MAPE: {round(best_params_by_dir['mape'], 2)}\n")
             f.write(f"RMSE: {round(best_params_by_dir['rmse'], 2)}\n")  
-            f.write(f"Dir: {round(best_params_by_dir['da'], 2)}\n\n")
+            f.write(f"Dir: {round(best_params_by_dir['da[0:0]'], 2)}\n\n")
         
     custom_order = [
         "Moving Average",
@@ -432,7 +431,7 @@ def find_best_param(stock_name):
     sorted_df.drop('sort_order', axis=1, inplace=True)
     sorted_df = sorted_df.astype(object)
     sorted_df.fillna('', inplace=True)
-    sorted_df.to_csv(path + '/best_param_overall.csv', index=False)    
+    sorted_df.to_csv(path + '/best_param_overall.csv', index=False)
 
     print("Finished find best parameter for ", stock_name)    
     print("-----------------------------------------")

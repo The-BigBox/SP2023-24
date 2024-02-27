@@ -1,5 +1,5 @@
-param,mape,rmse,da
-window_size_10.csv,6.65,3.65,48.57
-window_size_15.csv,8.76,4.9,45.71
-window_size_20.csv,10.73,5.9,45.71
-window_size_5.csv,4.65,2.76,48.57
+param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
+window_size_10.csv,6.65,3.65,48.57,31.43,31.43,17.14,17.14
+window_size_15.csv,8.76,4.9,45.71,31.43,31.43,20.0,14.29
+window_size_20.csv,10.73,5.9,45.71,34.29,34.29,17.14,11.43
+window_size_5.csv,4.65,2.76,48.57,34.29,34.29,14.29,14.29
