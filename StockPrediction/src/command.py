@@ -1,5 +1,6 @@
 import prediction_function as cmd
 from datetime import datetime
+import pytz
 import time
 
 num_ex = 0
@@ -72,6 +73,7 @@ def main():
     start_time = time.time()    
     now = datetime.now()
     print("Start date and time:", now)
+    print("-----------------------------------------")
     if command == "4":
         features = get_features_list()
     if stock == "ALL":
