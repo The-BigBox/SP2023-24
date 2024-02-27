@@ -1,5 +1,5 @@
 param,mape,rmse,da
-window_size_10.csv,4.43,8.8,0
-window_size_15.csv,4.89,9.97,0
-window_size_20.csv,5.68,12.49,0
-window_size_5.csv,3.39,7.36,0
+window_size_10.csv,4.43,8.8,65.71
+window_size_15.csv,4.89,9.97,60.0
+window_size_20.csv,5.68,12.49,62.86
+window_size_5.csv,3.39,7.36,71.43

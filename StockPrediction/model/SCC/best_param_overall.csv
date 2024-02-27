@@ -1,19 +1,19 @@
 Features,param,mape,rmse,da
-Moving Average,window_size_5.csv,2.8,12.96,0
-ARIMA,ARIMA_d6_p6_q3.csv,2.65,11.78,0
-Fundamental,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,1.95,9.41,0
-Fundamental+LDA News,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.18,9.98,0
-Fundamental+LDA Twitter,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.15,9.6,0
-Fundamental+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.21,9.88,0
-Fundamental+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.35,10.51,0
-Fundamental+LDA News+LDA Twitter,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.4,10.53,0
-Fundamental+LDA News+GDELT V1,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.1,9.68,0
-Fundamental+LDA News+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.16,9.41,0
-Fundamental+LDA Twitter+GDELT V1,XGBModel_lags2_lags_past_covariates2_output_chunk_length1.csv,2.08,9.44,0
-Fundamental+LDA Twitter+GDELT V2,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.26,10.49,0
-Fundamental+GDELT V1+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.12,9.75,0
-Fundamental+LDA News+LDA Twitter+GDELT V1,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.34,9.68,0
-Fundamental+LDA News+LDA Twitter+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.15,9.43,0
-Fundamental+LDA News+GDELT V1+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.18,9.87,0
-Fundamental+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.09,10.59,0
-Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.13,9.77,0
+Moving Average,window_size_5.csv,2.8,12.96,68.57
+ARIMA,ARIMA_d6_p6_q3.csv,2.65,11.78,62.86
+Fundamental,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,1.95,9.41,71.43
+Fundamental+LDA News,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.18,9.98,60.0
+Fundamental+LDA Twitter,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.15,9.6,54.29
+Fundamental+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.21,9.88,62.86
+Fundamental+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.35,10.51,57.14
+Fundamental+LDA News+LDA Twitter,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.4,10.53,57.14
+Fundamental+LDA News+GDELT V1,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.1,9.68,60.0
+Fundamental+LDA News+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.16,9.41,60.0
+Fundamental+LDA Twitter+GDELT V1,XGBModel_lags2_lags_past_covariates2_output_chunk_length1.csv,2.08,9.44,54.29
+Fundamental+LDA Twitter+GDELT V2,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.26,10.49,54.29
+Fundamental+GDELT V1+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.12,9.75,62.86
+Fundamental+LDA News+LDA Twitter+GDELT V1,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.34,9.68,57.14
+Fundamental+LDA News+LDA Twitter+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.15,9.43,60.0
+Fundamental+LDA News+GDELT V1+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.18,9.87,65.71
+Fundamental+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.09,10.59,60.0
+Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,2.13,9.77,65.71

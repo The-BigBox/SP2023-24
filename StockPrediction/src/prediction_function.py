@@ -1,5 +1,4 @@
 import os
-import re
 import numpy as np
 import pandas as pd
 from darts import TimeSeries
@@ -256,20 +255,6 @@ def moving_average(stock):
         output.to_csv(f'{PARAMETER_PATH}/{stock}/Moving Average/window_size_{size}.csv')
     print("Finished caculate Moving Average for ", stock)
 
-def directional_accuracy(actual, forecasted):
-    actual = actual.values().flatten()
-    forecasted = forecasted.values().flatten()
-    
-    actual_diff = actual[1:] - actual[:-1]
-    forecasted_diff = forecasted[1:] - forecasted[:-1]
-
-    actual_sign = np.sign(actual_diff)
-    forecasted_sign = np.sign(forecasted_diff)
-
-    matches = (actual_sign == forecasted_sign).sum()
-
-    return matches / len(actual_diff) * 100
-
 def plot_graph(dates, series, val, arima_pred, new_model_pred):
     plt.figure(figsize=(10, 6))
     plt.plot(dates[-300:-60], series.values()[-300:-60], label='Actual (Last 300 days)')
@@ -287,8 +272,34 @@ def plot_graph(dates, series, val, arima_pred, new_model_pred):
     plt.legend(loc='upper left', bbox_to_anchor=(1,1))
     plt.show()
 
-def calculate_directional_accuracy(actual, forecast):
-    return 0
+def calculate_directional_accuracy(actual, forecast):  
+    acc = 0
+    for i in range(len(forecast)):
+        actual_change = actual[i + 1] - actual[i]
+        predicted_change = forecast[i] - actual[i]
+        if (actual_change > 0 and predicted_change > 0) or (actual_change < 0 and predicted_change < 0) or (actual_change == 0 and predicted_change == 0):
+            acc += 1
+
+    da = round(acc / len(forecast) * 100, 2)
+    return da
+
+def calculate_directional_accuracy_with_thresholds(actual, forecast):
+    thresholds = [0, 5, 10] 
+    combinations = [(up, -down) for up in thresholds for down in thresholds if not (up > 0 and down > 0)]
+    results = []
+    for up, down in combinations:
+        acc = 0
+        for i in range(len(forecast)):
+            actual_change = ((actual[i + 1] - actual[i]) / actual[i]) * 100
+            predicted_change = ((forecast[i] - actual[i]) / actual[i]) * 100
+            if (actual_change >= up and predicted_change >= up) or \
+                (actual_change <= down and predicted_change <= down):
+                acc += 1
+
+        da = round(acc / len(forecast) * 100, 2)
+        results.append((up, abs(down), da))
+    
+    return results
 
 def calculate_mape(actual, forecast):
     actual, forecast = np.array(actual), np.array(forecast)
@@ -315,7 +326,7 @@ def cal_err_and_acc(predicted_ts, val_ts, condition=True):
     
     mape_error = calculate_mape(actual.iloc[1:], forecast)
     rmse_error = calculate_rmse(actual.iloc[1:], forecast)
-    dir_acc = calculate_directional_accuracy(actual, forecast)
+    dir_acc = calculate_directional_accuracy_with_thresholds(actual, forecast)
     
     if condition:
         return mape_error, rmse_error, dir_acc
@@ -355,14 +366,14 @@ def find_best_param(stock_name):
             except Exception as e:
                 print(f"Error {e} when calculate error in {check_path}")
 
-            results.append({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
+            results.append({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
 
-            if avg_dir > best_params_by_dir['da']:
-                best_params_by_dir.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
+            if avg_dir[0][2] > best_params_by_dir['da']:
+                best_params_by_dir.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
             if avg_mape < best_params_by_mape['mape']:
-                best_params_by_mape.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
+                best_params_by_mape.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
             if avg_rmse < best_params_by_rmse['rmse']:
-                best_params_by_rmse.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir})
+                best_params_by_rmse.update({'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, 'da': avg_dir[0][2]})
 
         results_df = pd.DataFrame(results)
         results_df = results_df.round(2)

@@ -15,7 +15,6 @@ def cal_execution_time(start_time):
     now = datetime.now()
     print("End date and time:", now)
 
-
 def get_valid_command():
     print("-----------------------------------------")
     print("1 : Convert stock data to weekly")

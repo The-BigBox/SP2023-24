@@ -2,17 +2,17 @@ Best MAPE Param:
 Param: window_size_5.csv
 MAPE: 3.65
 RMSE: 0.4
-Dir: 0
+Dir: 57.14
 
 Best RMSE Param:
 Param: window_size_5.csv
 MAPE: 3.65
 RMSE: 0.4
-Dir: 0
+Dir: 57.14
 
 Best Dir Param:
-Param: None
-MAPE: inf
-RMSE: inf
-Dir: 0
+Param: window_size_15.csv
+MAPE: 6.0
+RMSE: 0.64
+Dir: 57.14
 
