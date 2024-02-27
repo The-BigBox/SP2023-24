@@ -439,7 +439,7 @@ def find_best_param(stock_name):
 
 def merge_best_param():
     base_file_path = PARAMETER_PATH + '{name}/best_param_overall.csv'
-    output_file_path = PARAMETER_PATH + 'merged_output.csv'  # Replace with the actual output path
+    output_file_path = PARAMETER_PATH + 'merged_overall_param.csv'  # Replace with the actual output path
     with open(output_file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
 

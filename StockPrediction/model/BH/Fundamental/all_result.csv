@@ -1,4 +1,7 @@
 param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
+TransformerModel_input_chunk_length1_n_epochs15_output_chunk_length1.csv,18.06,44.69,51.43,14.29,11.43,42.86,40.0
+TransformerModel_input_chunk_length3_n_epochs15_output_chunk_length1.csv,18.36,45.41,51.43,14.29,11.43,42.86,40.0
+TransformerModel_input_chunk_length5_n_epochs15_output_chunk_length1.csv,18.21,44.94,51.43,14.29,11.43,42.86,40.0
 XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,5.07,12.06,62.86,28.57,28.57,34.29,34.29
 XGBModel_lags10_lags_past_covariates1_output_chunk_length1.csv,3.69,10.17,62.86,28.57,28.57,34.29,34.29
 XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.36,9.42,60.0,22.86,22.86,37.14,37.14
