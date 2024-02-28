@@ -1,0 +1,58 @@
+Stock,Features,param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
+ADVANC,ARIMA,ARIMA_d4_p10_q2.csv,2.44,7.07,68.57,28.57,28.57,40.0,40.0
+ADVANC,Moving Average,window_size_5.csv,2.93,8.35,65.71,31.43,31.43,34.29,34.29
+ADVANC,Fundamental+LDA Twitter+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.2,6.09,80.0,28.57,28.57,51.43,51.43
+BANPU,ARIMA,ARIMA_d4_p6_q3.csv,4.09,0.59,42.86,34.29,34.29,8.57,8.57
+BANPU,Moving Average,window_size_5.csv,3.99,0.65,60.0,22.86,22.86,37.14,37.14
+BANPU,Fundamental,XGBModel_lags1_lags_past_covariates10_output_chunk_length1.csv,3.13,0.53,60.0,34.29,31.43,28.57,28.57
+BH,ARIMA,ARIMA_d4_p6_q2.csv,3.48,8.7,60.0,48.57,48.57,11.43,11.43
+BH,Moving Average,window_size_5.csv,5.17,12.65,54.29,25.71,22.86,31.43,31.43
+BH,Fundamental+LDA Twitter,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.24,8.64,68.57,37.14,37.14,31.43,31.43
+BTS,ARIMA,ARIMA_d4_p4_q2.csv,1.97,0.22,57.14,17.14,17.14,40.0,40.0
+BTS,Moving Average,window_size_5.csv,2.25,0.24,62.86,37.14,37.14,25.71,25.71
+BTS,Fundamental,XGBModel_lags10_lags_past_covariates1_output_chunk_length1.csv,2.13,0.23,60.0,37.14,37.14,22.86,22.86
+CBG,ARIMA,ARIMA_d4_p10_q2.csv,4.02,4.89,42.86,17.14,14.29,28.57,28.57
+CBG,Moving Average,window_size_5.csv,5.43,6.98,51.43,25.71,25.71,28.57,25.71
+CBG,Fundamental,XGBModel_lags1_lags_past_covariates5_output_chunk_length1.csv,3.23,4.05,51.43,34.29,28.57,25.71,22.86
+CPALL,ARIMA,ARIMA_d4_p10_q2.csv,3.0,2.24,48.57,31.43,31.43,17.14,17.14
+CPALL,Moving Average,window_size_5.csv,3.9,3.04,54.29,34.29,34.29,25.71,20.0
+CPALL,Fundamental+LDA Twitter+GDELT V2,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.4,1.93,57.14,31.43,31.43,34.29,25.71
+CPF,ARIMA,ARIMA_d4_p6_q2.csv,2.88,0.97,60.0,28.57,28.57,31.43,31.43
+CPF,Moving Average,window_size_5.csv,3.1,1.01,77.14,37.14,37.14,40.0,40.0
+CPF,Fundamental+LDA Twitter,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.41,0.82,74.29,34.29,34.29,40.0,40.0
+INTUCH,ARIMA,ARIMA_d4_p6_q3.csv,2.82,2.63,51.43,28.57,28.57,25.71,25.71
+INTUCH,Moving Average,window_size_5.csv,2.65,2.59,68.57,31.43,31.43,37.14,37.14
+INTUCH,Fundamental+LDA News+LDA Twitter,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.18,1.98,48.57,20.0,17.14,34.29,31.43
+IVL,ARIMA,ARIMA_d4_p6_q3.csv,4.01,2.42,42.86,11.43,11.43,31.43,31.43
+IVL,Moving Average,window_size_10.csv,5.28,3.05,57.14,37.14,31.43,31.43,25.71
+IVL,Fundamental+LDA Twitter,XGBModel_lags2_lags_past_covariates6_output_chunk_length1.csv,3.78,2.44,57.14,22.86,20.0,37.14,37.14
+KBANK,ARIMA,ARIMA_d4_p4_q2.csv,3.2,5.97,57.14,28.57,28.57,28.57,28.57
+KBANK,Moving Average,window_size_5.csv,3.39,7.36,71.43,45.71,45.71,25.71,25.71
+KBANK,Fundamental+GDELT V1,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.69,6.19,62.86,22.86,22.86,40.0,40.0
+LH,ARIMA,ARIMA_d6_p10_q2.csv,4.07,0.44,40.0,25.71,25.71,14.29,14.29
+LH,Moving Average,window_size_5.csv,3.65,0.4,57.14,25.71,25.71,31.43,31.43
+LH,Fundamental+LDA Twitter,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.43,0.3,62.86,34.29,34.29,31.43,31.43
+PTT,ARIMA,ARIMA_d6_p10_q2.csv,3.89,1.74,51.43,22.86,22.86,28.57,28.57
+PTT,Moving Average,window_size_5.csv,3.66,1.62,57.14,37.14,37.14,20.0,20.0
+PTT,Fundamental+LDA Twitter+GDELT V1,XGBModel_lags6_lags_past_covariates6_output_chunk_length1.csv,3.0,1.4,60.0,28.57,28.57,31.43,31.43
+PTTEP,ARIMA,ARIMA_d6_p10_q2.csv,5.48,11.61,42.86,40.0,37.14,8.57,5.71
+PTTEP,Moving Average,window_size_5.csv,4.99,10.04,57.14,31.43,25.71,34.29,31.43
+PTTEP,Fundamental+LDA Twitter,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,4.15,8.95,51.43,25.71,25.71,28.57,25.71
+PTTGC,ARIMA,ARIMA_d6_p10_q2.csv,5.01,3.03,51.43,20.0,20.0,31.43,31.43
+PTTGC,Moving Average,window_size_5.csv,4.65,2.76,48.57,34.29,34.29,14.29,14.29
+PTTGC,Fundamental+LDA Twitter+GDELT V1,XGBModel_lags2_lags_past_covariates6_output_chunk_length1.csv,3.12,1.83,62.86,22.86,22.86,42.86,40.0
+SCB,ARIMA,ARIMA_d6_p10_q2.csv,9.71,17.83,54.29,17.14,17.14,40.0,37.14
+SCB,Moving Average,window_size_10.csv,5.59,9.97,57.14,37.14,34.29,25.71,25.71
+SCB,Fundamental+LDA News+GDELT V1+GDELT V2,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,5.34,8.77,62.86,25.71,22.86,42.86,42.86
+SCC,ARIMA,ARIMA_d6_p6_q3.csv,2.65,11.78,62.86,34.29,34.29,28.57,28.57
+SCC,Moving Average,window_size_5.csv,2.8,12.96,68.57,45.71,45.71,22.86,22.86
+SCC,Fundamental,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,1.95,9.41,71.43,40.0,40.0,31.43,31.43
+TISCO,ARIMA,ARIMA_d6_p6_q3.csv,2.49,3.16,54.29,42.86,42.86,11.43,11.43
+TISCO,Moving Average,window_size_5.csv,2.87,3.45,42.86,17.14,17.14,25.71,25.71
+TISCO,Fundamental+LDA Twitter+GDELT V1,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,1.64,2.55,65.71,45.71,45.71,20.0,20.0
+TU,ARIMA,ARIMA_d6_p10_q3.csv,3.42,0.83,60.0,34.29,28.57,31.43,31.43
+TU,Moving Average,window_size_5.csv,4.55,0.97,51.43,25.71,25.71,25.71,25.71
+TU,Fundamental+LDA News+LDA Twitter,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,2.62,0.65,62.86,22.86,22.86,40.0,40.0
+WHA,ARIMA,ARIMA_d6_p6_q3.csv,3.89,0.17,62.86,34.29,34.29,28.57,28.57
+WHA,Moving Average,window_size_5.csv,3.82,0.18,74.29,37.14,37.14,37.14,37.14
+WHA,Fundamental,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,3.82,0.16,65.71,25.71,25.71,40.0,40.0

@@ -1,6 +1,8 @@
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 import prediction_function as cmd
 from datetime import datetime
-import pytz
 import time
 
 num_ex = 0

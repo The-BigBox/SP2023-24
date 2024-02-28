@@ -12,15 +12,6 @@ findFile = main + "/DataCrawling/result"
 output_path = main + "TopicModeling/data/ModelingDataset/V.2"
 
 def merge(ag):
-    import os
-    import re
-    import pandas as pd
-    import chardet
-    from bs4 import BeautifulSoup
-    import csv
-    main = os.getcwd() + "/../../../"
-    findFile = main + "/DataCrawling/result"
-    output_path = main + "TopicModeling/data/ModelingDataset/V.2"
 
     # directories = [f for f in os.listdir(findFile) if os.path.isdir(os.path.join(findFile, f))]
     # print(directories)

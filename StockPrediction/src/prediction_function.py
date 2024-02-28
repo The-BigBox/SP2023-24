@@ -439,7 +439,11 @@ def find_best_param(stock_name):
 
 def merge_best_param():
     base_file_path = PARAMETER_PATH + '{name}/best_param_overall.csv'
-    output_file_path = PARAMETER_PATH + 'merged_overall_param.csv'  # Replace with the actual output path
+    output_file_path = PARAMETER_PATH + 'merged_overall_param.csv'
+    best_rows_path = PARAMETER_PATH + 'best_param_with_arima_ma.csv'
+    best_ml_path = PARAMETER_PATH + 'best_param_ml.csv'
+    best_rows_list = []
+    best_ml = []
     with open(output_file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
 
@@ -448,6 +452,13 @@ def merge_best_param():
             header = f"{stock_name}"
             try:
                 df = pd.read_csv(file_path)
+                df.insert(0, 'Stock', stock_name)
+                best_rows_list.append(df[df['Features'].str.contains('ARIMA')].copy())
+                best_rows_list.append(df[df['Features'].str.contains('Moving Average')].copy())
+                filtered_df = df[~((df['Features'] == "ARIMA") | (df['Features'] == "Moving Average"))]
+                filtered_row = filtered_df.loc[filtered_df['mape'].idxmin(), 'Features']
+                best_ml.append([stock_name, filtered_row])
+                best_rows_list.append(df[df['Features'] == filtered_row].copy())
             except FileNotFoundError:
                 print(f"File not found for {stock_name}, skipping.")
                 continue
@@ -455,7 +466,12 @@ def merge_best_param():
             writer.writerow(df.columns.tolist())
             for index, row in df.iterrows():
                 writer.writerow(row)
+    best_rows_df = pd.concat(best_rows_list, ignore_index=True)
+    best_rows_df.to_csv(best_rows_path, index=False)
+    best_ml_df = pd.DataFrame(best_ml, columns=['Stock', 'Best ML Feature'])
+    best_ml_df.to_csv(best_ml_path, index=False)
     print(f"Data merged and saved to {output_file_path}")
+    print(f"Best rows excluding ARIMA and Moving Average saved to {best_rows_path}")
     print("-----------------------------------------")
 
 def get_stock_change():
