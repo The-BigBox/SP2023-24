@@ -11,8 +11,8 @@ RMSE: 6.99
 Dir: 57.14
 
 Best Dir Param:
-Param: TransformerModel_input_chunk_length3_n_epochs15_output_chunk_length1.csv
-MAPE: 18.47
-RMSE: 29.68
-Dir: 62.86
+Param: BlockRNNModel_input_chunk_length3_modelLSTM_n_epochs15_output_chunk_length1.csv
+MAPE: 8.73
+RMSE: 14.02
+Dir: 65.71
 

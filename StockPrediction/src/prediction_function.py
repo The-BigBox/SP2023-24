@@ -35,13 +35,13 @@ MODEL_PARAM = {
         'n_epochs': [15],
         # Add more Transformer-specific parameters if needed
     },
-    # 'BlockRNNModel': {
-    #     'model': ['LSTM'],
-    #     'input_chunk_length': [1,3,5], 
-    #     'output_chunk_length': [1], 
-    #     'n_epochs': [15],
-    #     # Add more BlockRNN-specific parameters if needed
-    # },
+    'BlockRNNModel': {
+        'model': ['LSTM'],
+        'input_chunk_length': [1,3,5], 
+        'output_chunk_length': [1], 
+        'n_epochs': [15],
+        # Add more BlockRNN-specific parameters if needed
+    },
     # 'NBEATSModel': {
     #     'input_chunk_length': [1,3,5], 
     #     'output_chunk_length': [1], 

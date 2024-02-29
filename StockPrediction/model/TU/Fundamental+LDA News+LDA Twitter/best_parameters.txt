@@ -11,8 +11,8 @@ RMSE: 0.65
 Dir: 62.86
 
 Best Dir Param:
-Param: XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv
-MAPE: 2.62
-RMSE: 0.65
-Dir: 62.86
+Param: BlockRNNModel_input_chunk_length3_modelLSTM_n_epochs15_output_chunk_length1.csv
+MAPE: 7.33
+RMSE: 1.91
+Dir: 65.71
 

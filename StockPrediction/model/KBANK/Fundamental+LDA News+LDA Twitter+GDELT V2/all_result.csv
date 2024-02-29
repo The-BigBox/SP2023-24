@@ -1,4 +1,10 @@
 param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
+BlockRNNModel_input_chunk_length1_modelLSTM_n_epochs15_output_chunk_length1.csv,8.2,13.54,54.29,45.71,45.71,14.29,8.57
+BlockRNNModel_input_chunk_length3_modelLSTM_n_epochs15_output_chunk_length1.csv,10.31,17.86,60.0,51.43,45.71,20.0,14.29
+BlockRNNModel_input_chunk_length5_modelLSTM_n_epochs15_output_chunk_length1.csv,6.1,11.53,62.86,45.71,42.86,25.71,20.0
+TransformerModel_input_chunk_length1_n_epochs15_output_chunk_length1.csv,9.47,17.9,65.71,51.43,48.57,25.71,20.0
+TransformerModel_input_chunk_length3_n_epochs15_output_chunk_length1.csv,18.5,30.69,62.86,51.43,51.43,20.0,14.29
+TransformerModel_input_chunk_length5_n_epochs15_output_chunk_length1.csv,20.43,33.34,57.14,51.43,51.43,14.29,8.57
 XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,3.78,7.87,48.57,31.43,28.57,20.0,20.0
 XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,3.72,7.67,57.14,25.71,25.71,31.43,31.43
 XGBModel_lags10_lags_past_covariates6_output_chunk_length1.csv,4.04,8.65,42.86,25.71,22.86,20.0,20.0

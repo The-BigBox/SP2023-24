@@ -1,4 +1,10 @@
 param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
+BlockRNNModel_input_chunk_length1_modelLSTM_n_epochs15_output_chunk_length1.csv,18.05,44.27,54.29,17.14,14.29,42.86,40.0
+BlockRNNModel_input_chunk_length3_modelLSTM_n_epochs15_output_chunk_length1.csv,19.02,44.33,48.57,11.43,8.57,42.86,40.0
+BlockRNNModel_input_chunk_length5_modelLSTM_n_epochs15_output_chunk_length1.csv,18.33,45.15,51.43,14.29,11.43,42.86,40.0
+TransformerModel_input_chunk_length1_n_epochs15_output_chunk_length1.csv,17.98,44.62,51.43,14.29,11.43,42.86,40.0
+TransformerModel_input_chunk_length3_n_epochs15_output_chunk_length1.csv,18.05,44.49,51.43,14.29,11.43,42.86,40.0
+TransformerModel_input_chunk_length5_n_epochs15_output_chunk_length1.csv,18.57,45.72,51.43,14.29,11.43,42.86,40.0
 XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,6.45,14.53,62.86,28.57,28.57,34.29,34.29
 XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,4.4,11.23,57.14,25.71,25.71,31.43,31.43
 XGBModel_lags10_lags_past_covariates6_output_chunk_length1.csv,4.37,10.94,68.57,31.43,31.43,37.14,37.14

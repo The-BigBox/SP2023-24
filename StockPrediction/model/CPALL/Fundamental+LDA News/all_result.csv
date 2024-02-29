@@ -1,4 +1,7 @@
 param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
+BlockRNNModel_input_chunk_length1_modelLSTM_n_epochs15_output_chunk_length1.csv,12.59,8.38,62.86,62.86,62.86,14.29,0.0
+BlockRNNModel_input_chunk_length3_modelLSTM_n_epochs15_output_chunk_length1.csv,12.88,8.61,62.86,62.86,62.86,14.29,0.0
+BlockRNNModel_input_chunk_length5_modelLSTM_n_epochs15_output_chunk_length1.csv,13.32,8.83,62.86,62.86,62.86,14.29,0.0
 TransformerModel_input_chunk_length1_n_epochs15_output_chunk_length1.csv,12.5,8.26,62.86,62.86,62.86,14.29,0.0
 TransformerModel_input_chunk_length3_n_epochs15_output_chunk_length1.csv,12.32,8.15,62.86,62.86,62.86,14.29,0.0
 TransformerModel_input_chunk_length5_n_epochs15_output_chunk_length1.csv,12.75,8.45,62.86,62.86,62.86,14.29,0.0

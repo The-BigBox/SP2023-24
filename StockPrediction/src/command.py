@@ -88,6 +88,8 @@ def main():
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
             execute_command(command, each_stock, features)
+        if command == "5":
+            cmd.merge_best_param()
     else:
         execute_command(command, stock, features)
     if command == "4":
