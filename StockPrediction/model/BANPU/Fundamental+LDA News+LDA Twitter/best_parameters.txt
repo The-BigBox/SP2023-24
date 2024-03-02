@@ -5,10 +5,10 @@ RMSE: 0.62
 Dir: 71.43
 
 Best RMSE Param:
-Param: XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv
-MAPE: 3.53
-RMSE: 0.62
-Dir: 71.43
+Param: RandomForest_lags10_lags_past_covariates10_output_chunk_length1.csv
+MAPE: 3.63
+RMSE: 0.59
+Dir: 62.86
 
 Best Dir Param:
 Param: XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv

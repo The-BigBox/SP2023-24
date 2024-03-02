@@ -9,7 +9,7 @@ from darts.metrics import mape, mse
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import ParameterGrid
 from darts.dataprocessing.transformers import Scaler
-from darts.models import TransformerModel, BlockRNNModel, NBEATSModel, XGBModel, LightGBMModel
+from darts.models import TransformerModel, BlockRNNModel, NBEATSModel, XGBModel, RegressionModel, LinearRegressionModel, RandomForest
 
 ORIGINAL_DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA/'
 DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA_WEEKLY/'
@@ -52,6 +52,21 @@ MODEL_PARAM = {
     'XGBModel': {
         'lags': [2, 6, 10], 
         'lags_past_covariates': [2, 6, 10], 
+        'output_chunk_length': [1], 
+    },
+    'RegressionModel': {
+        'lags': [2, 6, 10], 
+        'lags_past_covariates': [6, 10], 
+        'output_chunk_length': [1], 
+    },
+    'LinearRegressionModel': {
+        'lags': [2, 6, 10], 
+        'lags_past_covariates': [6, 10], 
+        'output_chunk_length': [1], 
+    },
+    'RandomForest': {
+        'lags': [2, 6, 10], 
+        'lags_past_covariates': [6, 10], 
         'output_chunk_length': [1], 
     }
 }
@@ -142,8 +157,8 @@ def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv
     return training_scaled, past_cov_ts, scaler_dataset
 
 def predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset):
-    model.fit(training_scaled, past_covariates=past_cov_ts, verbose=True)
-    forecast = model.predict(PREDICT_SIZE, verbose=True)
+    model.fit(training_scaled, past_covariates=past_cov_ts)
+    forecast = model.predict(PREDICT_SIZE)
     in_forecast = scaler_dataset.inverse_transform(forecast)
     return in_forecast
 
@@ -434,7 +449,7 @@ def find_best_param(stock_name):
     sorted_df.fillna('', inplace=True)
     sorted_df.to_csv(path + '/best_param_overall.csv', index=False)
 
-    print("Finished find best parameter for ", stock_name)    
+    print("Finished find best parameter for", stock_name)    
     print("-----------------------------------------")
 
 def merge_best_param():
@@ -524,6 +539,12 @@ def stock_tuning(stock_name, features):
                 model = NBEATSModel(**params)
             elif model_type == 'XGBModel':
                 model = XGBModel(**params)
+            elif model_type == 'RegressionModel':
+                model = RegressionModel(**params)
+            elif model_type == 'LinearRegressionModel':
+                model = LinearRegressionModel(**params)
+            elif model_type == 'RandomForest':
+                model = RandomForest(**params)
 
             generate_path = PARAMETER_PATH+f"{stock_name}/"
             if 1 in features:

@@ -6,6 +6,22 @@ from datetime import datetime
 import time
 
 num_ex = 0
+all_features_list = [[1], 
+                [1, 2],
+                [1, 3],
+                [1, 4],
+                [1, 5],
+                [1, 2, 3],
+                [1, 2, 4],
+                [1, 2, 5],
+                [1, 3, 4],
+                [1, 3, 5],
+                [1, 4, 5],
+                [1, 2, 3, 4],
+                [1, 2, 3, 5],
+                [1, 2, 4, 5],
+                [1, 3, 4, 5],
+                [1, 2, 3, 4, 5]]
 
 def cal_execution_time(start_time):
     end_time = time.time()
@@ -52,6 +68,8 @@ def get_features_list():
     print("-----------------------------------------")
     features = input("Enter features list: ")
     try:
+        if features.upper() == "ALL":
+            return "ALL"
         features_list = [int(item.strip()) for item in features.split(',')]
     except ValueError:
         print("Invalid input. Please enter numbers separated by commas.")
@@ -83,15 +101,22 @@ def main():
     now = datetime.now()
     print("Start date and time:", now)
     print("-----------------------------------------")
-    if command == "4":
-        features = get_features_list()
+    features = get_features_list() if command == "4" else []
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
-            execute_command(command, each_stock, features)
+            if features == "ALL":
+                for features in all_features_list:
+                    execute_command(command, each_stock, features)
+            else:
+                execute_command(command, each_stock, features)
         if command == "5":
             cmd.merge_best_param()
     else:
-        execute_command(command, stock, features)
+        if features == "ALL":
+            for features in all_features_list:
+                execute_command(command, stock, features)
+        else:
+            execute_command(command, stock, features)
     if command == "4":
         print(f"--> Summing number of experiment: {num_ex} <--")
     cal_execution_time(start_time)
