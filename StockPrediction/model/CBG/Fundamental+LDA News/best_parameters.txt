@@ -1,18 +1,18 @@
 Best MAPE Param:
-Param: XGBModel_lags1_lags_past_covariates1_output_chunk_length1.csv
-MAPE: 4.7
-RMSE: 5.96
-Dir: 54.29
+Param: LinearRegressionModel_lags10_lags_past_covariates10_output_chunk_length1.csv
+MAPE: 4.0
+RMSE: 5.19
+Dir: 60.0
 
 Best RMSE Param:
-Param: XGBModel_lags1_lags_past_covariates1_output_chunk_length1.csv
-MAPE: 4.7
-RMSE: 5.96
-Dir: 54.29
+Param: LinearRegressionModel_lags10_lags_past_covariates10_output_chunk_length1.csv
+MAPE: 4.0
+RMSE: 5.19
+Dir: 60.0
 
 Best Dir Param:
-Param: BlockRNNModel_input_chunk_length5_modelLSTM_n_epochs15_output_chunk_length1.csv
-MAPE: 15.35
-RMSE: 18.94
+Param: LinearRegressionModel_lags10_lags_past_covariates10_output_chunk_length1.csv
+MAPE: 4.0
+RMSE: 5.19
 Dir: 60.0
 

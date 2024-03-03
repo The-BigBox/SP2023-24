@@ -1,7 +1,7 @@
 Stock,Best ML Feature
-ADVANC,Fundamental+LDA Twitter+GDELT V1
+ADVANC,Fundamental
 BANPU,Fundamental
-BH,Fundamental+LDA Twitter
+BH,Fundamental+LDA News+GDELT V1
 BTS,Fundamental
 CBG,Fundamental
 CPALL,Fundamental+LDA Twitter+GDELT V2
@@ -10,11 +10,11 @@ INTUCH,Fundamental+LDA News+LDA Twitter
 IVL,Fundamental+LDA Twitter
 KBANK,Fundamental+GDELT V1
 LH,Fundamental+LDA Twitter
-PTT,Fundamental+LDA Twitter+GDELT V1
-PTTEP,Fundamental+LDA Twitter
-PTTGC,Fundamental+LDA Twitter+GDELT V1
-SCB,Fundamental+LDA News+GDELT V1+GDELT V2
+PTT,Fundamental+LDA Twitter
+PTTEP,Fundamental+LDA News+LDA Twitter+GDELT V1
+PTTGC,Fundamental+LDA Twitter
+SCB,Fundamental+LDA News+GDELT V1
 SCC,Fundamental
 TISCO,Fundamental+LDA Twitter+GDELT V1
-TU,Fundamental+LDA News+LDA Twitter
-WHA,Fundamental
+TU,Fundamental+GDELT V2
+WHA,Fundamental+LDA Twitter
