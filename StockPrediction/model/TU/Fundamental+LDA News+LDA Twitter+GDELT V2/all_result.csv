@@ -8,9 +8,11 @@ LinearRegressionModel_lags2_lags_past_covariates10_output_chunk_length1.csv,4.06
 LinearRegressionModel_lags2_lags_past_covariates6_output_chunk_length1.csv,3.42,0.74,57.14,22.86,20.0,37.14,37.14
 LinearRegressionModel_lags6_lags_past_covariates10_output_chunk_length1.csv,4.06,0.85,57.14,28.57,22.86,34.29,34.29
 LinearRegressionModel_lags6_lags_past_covariates6_output_chunk_length1.csv,3.42,0.74,57.14,22.86,20.0,37.14,37.14
+RandomForest_lags10_lags_past_covariates10_output_chunk_length1.csv,3.58,0.86,51.43,28.57,28.57,22.86,22.86
+RandomForest_lags10_lags_past_covariates6_output_chunk_length1.csv,3.07,0.71,57.14,28.57,28.57,28.57,28.57
 RandomForest_lags2_lags_past_covariates10_output_chunk_length1.csv,3.54,0.83,54.29,34.29,34.29,20.0,20.0
 RandomForest_lags2_lags_past_covariates6_output_chunk_length1.csv,2.74,0.68,57.14,25.71,25.71,31.43,31.43
-RandomForest_lags6_lags_past_covariates10_output_chunk_length1.csv,6.51,1.82,57.14,25.71,14.29,42.86,42.86
+RandomForest_lags6_lags_past_covariates10_output_chunk_length1.csv,3.44,0.83,57.14,28.57,28.57,28.57,28.57
 RandomForest_lags6_lags_past_covariates6_output_chunk_length1.csv,2.68,0.63,60.0,25.71,25.71,34.29,34.29
 RegressionModel_lags10_lags_past_covariates10_output_chunk_length1.csv,4.05,0.85,57.14,28.57,22.86,34.29,34.29
 RegressionModel_lags10_lags_past_covariates6_output_chunk_length1.csv,3.42,0.74,57.14,22.86,20.0,37.14,37.14

@@ -37,7 +37,7 @@ PTT,Moving Average,window_size_5.csv,3.66,1.62,57.14,37.14,37.14,20.0,20.0
 PTT,Fundamental+LDA Twitter,RandomForest_lags10_lags_past_covariates10_output_chunk_length1.csv,2.94,1.42,57.14,37.14,37.14,20.0,20.0
 PTTEP,ARIMA,ARIMA_d6_p10_q2.csv,5.48,11.61,42.86,40.0,37.14,8.57,5.71
 PTTEP,Moving Average,window_size_5.csv,4.99,10.04,57.14,31.43,25.71,34.29,31.43
-PTTEP,Fundamental+LDA News+LDA Twitter+GDELT V1,LinearRegressionModel_lags2_lags_past_covariates6_output_chunk_length1.csv,4.06,8.08,65.71,40.0,37.14,28.57,28.57
+PTTEP,Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2,LinearRegressionModel_lags2_lags_past_covariates6_output_chunk_length1.csv,3.91,7.74,60.0,31.43,31.43,28.57,28.57
 PTTGC,ARIMA,ARIMA_d6_p10_q2.csv,5.01,3.03,51.43,20.0,20.0,31.43,31.43
 PTTGC,Moving Average,window_size_5.csv,4.65,2.76,48.57,34.29,34.29,14.29,14.29
 PTTGC,Fundamental+LDA Twitter,RandomForest_lags6_lags_past_covariates6_output_chunk_length1.csv,2.98,1.8,65.71,28.57,28.57,37.14,37.14

@@ -15,5 +15,5 @@ Fundamental+GDELT V1+GDELT V2,LinearRegressionModel_lags2_lags_past_covariates6_
 Fundamental+LDA News+LDA Twitter+GDELT V1,LinearRegressionModel_lags2_lags_past_covariates6_output_chunk_length1.csv,4.06,8.08,65.71,40.0,37.14,28.57,28.57
 Fundamental+LDA News+LDA Twitter+GDELT V2,LinearRegressionModel_lags2_lags_past_covariates6_output_chunk_length1.csv,4.11,7.96,57.14,28.57,28.57,31.43,28.57
 Fundamental+LDA News+GDELT V1+GDELT V2,RegressionModel_lags6_lags_past_covariates6_output_chunk_length1.csv,4.11,8.24,54.29,25.71,22.86,31.43,31.43
-Fundamental+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags6_lags_past_covariates2_output_chunk_length1.csv,4.77,9.76,45.71,25.71,20.0,28.57,25.71
-Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags10_lags_past_covariates2_output_chunk_length1.csv,5.5,11.44,60.0,28.57,22.86,37.14,37.14
+Fundamental+LDA Twitter+GDELT V1+GDELT V2,RegressionModel_lags6_lags_past_covariates6_output_chunk_length1.csv,4.45,8.47,54.29,34.29,34.29,20.0,20.0
+Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2,LinearRegressionModel_lags2_lags_past_covariates6_output_chunk_length1.csv,3.91,7.74,60.0,31.43,31.43,28.57,28.57

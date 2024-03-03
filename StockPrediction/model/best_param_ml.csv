@@ -11,7 +11,7 @@ IVL,Fundamental+LDA Twitter
 KBANK,Fundamental+GDELT V1
 LH,Fundamental+LDA Twitter
 PTT,Fundamental+LDA Twitter
-PTTEP,Fundamental+LDA News+LDA Twitter+GDELT V1
+PTTEP,Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2
 PTTGC,Fundamental+LDA Twitter
 SCB,Fundamental+LDA News+GDELT V1
 SCC,Fundamental

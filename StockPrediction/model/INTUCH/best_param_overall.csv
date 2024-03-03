@@ -15,5 +15,5 @@ Fundamental+GDELT V1+GDELT V2,RandomForest_lags2_lags_past_covariates6_output_ch
 Fundamental+LDA News+LDA Twitter+GDELT V1,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.2,2.01,48.57,22.86,20.0,31.43,28.57
 Fundamental+LDA News+LDA Twitter+GDELT V2,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.21,2.05,51.43,22.86,20.0,34.29,31.43
 Fundamental+LDA News+GDELT V1+GDELT V2,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.27,2.13,45.71,20.0,17.14,31.43,28.57
-Fundamental+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags2_lags_past_covariates10_output_chunk_length1.csv,2.8,2.57,48.57,22.86,22.86,25.71,25.71
+Fundamental+LDA Twitter+GDELT V1+GDELT V2,RandomForest_lags6_lags_past_covariates6_output_chunk_length1.csv,2.58,2.38,51.43,25.71,25.71,25.71,25.71
 Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2,XGBModel_lags10_lags_past_covariates10_output_chunk_length1.csv,2.26,2.12,48.57,22.86,20.0,31.43,28.57
