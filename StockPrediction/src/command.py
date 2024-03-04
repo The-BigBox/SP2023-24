@@ -62,9 +62,8 @@ def get_valid_stock(command):
 def get_features_list():
     print("-> 1 : Fundamental and Technical")
     print("-> 2 : LDA News")
-    print("-> 3 : LDA Twitter")
-    print("-> 4 : GDELT V1")
-    print("-> 5 : GDELT V2")
+    print("-> 3 : GDELT V1")
+    print("-> 4 : GDELT V2")
     print("-----------------------------------------")
     features = input("Enter features list: ")
     try:

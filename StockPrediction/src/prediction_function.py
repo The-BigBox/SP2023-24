@@ -9,7 +9,7 @@ from darts.metrics import mape, mse
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import ParameterGrid
 from darts.dataprocessing.transformers import Scaler
-from darts.models import TransformerModel, BlockRNNModel, NBEATSModel, XGBModel, RegressionModel, LinearRegressionModel, RandomForest
+from darts.models import TiDEModel, BlockRNNModel, NBEATSModel, XGBModel, RegressionModel, LinearRegressionModel, RandomForest
 
 ORIGINAL_DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA/'
 DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA_WEEKLY/'
@@ -29,46 +29,40 @@ TEST_SIZE = 35
 PREDICT_SIZE = 1
 STOCK_LIST = ["ADVANC", "BANPU", "BH", "BTS", "CBG", "CPALL", "CPF", "INTUCH", "IVL", "KBANK", "LH", "PTT", "PTTEP", "PTTGC", "SCB", "SCC", "TISCO", "TU", "WHA"]
 MODEL_PARAM = {
-    'TransformerModel': {
-        'input_chunk_length': [1,3,5], 
-        'output_chunk_length': [1], 
-        'n_epochs': [15],
-        # Add more Transformer-specific parameters if needed
-    },
-    'BlockRNNModel': {
-        'model': ['LSTM'],
-        'input_chunk_length': [1,3,5], 
-        'output_chunk_length': [1], 
-        'n_epochs': [15],
-        # Add more BlockRNN-specific parameters if needed
-    },
-    # 'NBEATSModel': {
-    #     'input_chunk_length': [1,3,5], 
-    #     'output_chunk_length': [1], 
-    #     'n_epochs': [15],
-    #     # Add more N-BEATS-specific parameters if needed
-    # }
-
+    # Tree
     'XGBModel': {
-        'lags': [2, 6, 10], 
-        'lags_past_covariates': [2, 6, 10], 
-        'output_chunk_length': [1], 
-    },
-    'RegressionModel': {
-        'lags': [2, 6, 10], 
-        'lags_past_covariates': [6, 10], 
-        'output_chunk_length': [1], 
-    },
-    'LinearRegressionModel': {
-        'lags': [2, 6, 10], 
-        'lags_past_covariates': [6, 10], 
+        'lags': [1,2,3,4,8,12,16,20,24], 
+        'lags_past_covariates': [1,2,3,4,8,12,16,20,24], 
         'output_chunk_length': [1], 
     },
     'RandomForest': {
-        'lags': [2, 6, 10], 
-        'lags_past_covariates': [6, 10], 
+        'lags': [1,2,3,4,8,12,16,20,24], 
+        'lags_past_covariates': [1,2,3,4,8,12,16,20,24], 
         'output_chunk_length': [1], 
-    }
+    },
+
+    #Vector
+    'LinearRegressionModel': {
+        'lags': [1,2,3,4,8,12,16,20,24], 
+        'lags_past_covariates': [1,2,3,4,8,12,16,20,24], 
+        'output_chunk_length': [1], 
+    },
+
+    #RNN
+    'BlockRNNModel': {
+        'model': ['LSTM'],
+        'input_chunk_length': [1,2,3,4,8,12,16,20,24], 
+        'output_chunk_length': [1], 
+        'n_epochs': [15],
+    },
+
+    #Transformer
+    'TiDEModel': {
+        'input_chunk_length': [1,2,3,4,8,12,16,20,24], 
+        'output_chunk_length': [1], 
+        'n_epochs': [15],
+        # Add more Transformer-specific parameters if needed
+    },  
 }
 
 def convert_weekly_data(stock_name):
@@ -132,15 +126,15 @@ def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv
         updated_lda_news_df = preprocess_online_data(data_df, lda_news_df)
         past_covariate = past_covariate.join(updated_lda_news_df.reset_index(drop=True).drop(columns='Date'))
 
-    if 3 in features:
-        updated_lda_twitter_df = preprocess_online_data(data_df, lda_twitter_df)
-        past_covariate = past_covariate.join(updated_lda_twitter_df.reset_index(drop=True).drop(columns='Date'))
+    # if 3 in features:
+    #     updated_lda_twitter_df = preprocess_online_data(data_df, lda_twitter_df)
+    #     past_covariate = past_covariate.join(updated_lda_twitter_df.reset_index(drop=True).drop(columns='Date'))
 
-    if 4 in features:
+    if 3 in features:
         updated_GDELTv1 = preprocess_online_data(data_df, GDELTv1)
         past_covariate = past_covariate.join(updated_GDELTv1.reset_index(drop=True).drop(columns='Date'))
 
-    if 5 in features:
+    if 4 in features:
         updated_GDELTv2 = preprocess_online_data(data_df, GDELTv2)
         past_covariate = past_covariate.join(updated_GDELTv2.reset_index(drop=True).drop(columns='Date'))
 
@@ -483,7 +477,7 @@ def merge_best_param():
                 writer.writerow(row)
     best_rows_df = pd.concat(best_rows_list, ignore_index=True)
     best_rows_df.to_csv(best_rows_path, index=False)
-    best_ml_df = pd.DataFrame(best_ml, columns=['Stock', 'Best ML Feature'])
+    best_ml_df = pd.DataFrame(best_ml, columns=['Stock', 'Best ML Feature','param','mape','rmse'',da[0:0]','da[0:-5]','da[0:-10]','da[5:0]','da[10:0]'])
     best_ml_df.to_csv(best_ml_path, index=False)
     print(f"Data merged and saved to {output_file_path}")
     print(f"Best rows excluding ARIMA and Moving Average saved to {best_rows_path}")
@@ -531,38 +525,47 @@ def stock_tuning(stock_name, features):
  
     for model_type, params_grid in MODEL_PARAM.items():
         for params in ParameterGrid(params_grid):
-            if model_type == 'TransformerModel':
-                model = TransformerModel(**params)
-            elif model_type == 'BlockRNNModel':
-                model = BlockRNNModel(**params)
-            elif model_type == 'NBEATSModel':
-                model = NBEATSModel(**params)
-            elif model_type == 'XGBModel':
+            if model_type == 'XGBModel':
                 model = XGBModel(**params)
-            elif model_type == 'RegressionModel':
-                model = RegressionModel(**params)
-            elif model_type == 'LinearRegressionModel':
-                model = LinearRegressionModel(**params)
             elif model_type == 'RandomForest':
                 model = RandomForest(**params)
+            elif model_type == 'LinearRegressionModel':
+                model = LinearRegressionModel(**params)
+            elif model_type == 'BlockRNNModel':
+                model = BlockRNNModel(**params)
+            elif model_type == 'TiDEModel':
+                model = TiDEModel(**params)
+    
 
             generate_path = PARAMETER_PATH+f"{stock_name}/"
+            check_path = os.getcwd() + '/no logic model/'
             if 1 in features:
                 generate_path = generate_path+"Fundamental"
+                check_path = check_path+"Fundamental"
             if 2 in features:
                 generate_path = generate_path+"+LDA News"
+                check_path = check_path+"+LDA News"
             if 3 in features:
-                generate_path = generate_path+"+LDA Twitter"
-            if 4 in features:
                 generate_path = generate_path+"+GDELT V1"
-            if 5 in features:
+                check_path = check_path+"+GDELT V1"
+            if 4 in features:
                 generate_path = generate_path+"+GDELT V2"
+                check_path = check_path+"+GDELT V2"
                 
             if not os.path.exists(generate_path):
                 os.makedirs(generate_path) 
 
             params_str = '_'.join(f"{key}{val}" for key, val in params.items())
             filename = f"{model_type}_{params_str}"
+
+            if os.path.exists(check_path+"/"+filename+".csv"):
+                
+                import shutil
+                src = generate_path+"/"+filename+".csv"
+                dst = generate_path+"/"+filename+".csv"
+                shutil.copyfile(src, dst)
+                print("Skipped ", check_path,"/",filename,".csv" )
+                continue
 
             if os.path.exists(generate_path+"/"+filename+".csv"):
                 continue
