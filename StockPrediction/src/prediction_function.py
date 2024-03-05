@@ -61,7 +61,6 @@ MODEL_PARAM = {
         'input_chunk_length': [1,2,3,4,8,12,16,20,24], 
         'output_chunk_length': [1], 
         'n_epochs': [15],
-        # Add more Transformer-specific parameters if needed
     },  
 }
 
@@ -374,7 +373,8 @@ def find_best_param(stock_name):
             try:
                 avg_mape, avg_rmse, avg_dir = cal_err_and_acc(predict_ts, val_ts, True)
             except Exception as e:
-                print(f"Error {e} when calculate error in {check_path}")
+                print(f"Error {e} when calculate error in {check_path}/{param_file}")
+                continue
 
             results.append({f'param': param_file, 'mape': avg_mape, 'rmse': avg_rmse, **{f'da[{up}:{down}]': da for up, down, da in avg_dir}})
 
@@ -524,6 +524,7 @@ def stock_tuning(stock_name, features):
     print(f"Tuning {stock_name} with {features} ...")
  
     for model_type, params_grid in MODEL_PARAM.items():
+        print("Model: ", model_type)
         for params in ParameterGrid(params_grid):
             if model_type == 'XGBModel':
                 model = XGBModel(**params)
