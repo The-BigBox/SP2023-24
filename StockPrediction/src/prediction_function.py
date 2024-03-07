@@ -246,7 +246,7 @@ def moving_average(stock):
     if not os.path.exists(f'{PARAMETER_PATH}/{stock}/Moving Average'):
         os.makedirs(f'{PARAMETER_PATH}/{stock}/Moving Average')
 
-    window_size = [5, 10, 15, 20]
+    window_size = [1,2,3,4,8,12,16,20,24]
 
     for size in window_size:
         stock_data, stock_id, _, _, _, _, _ = load_data(stock)
@@ -416,20 +416,12 @@ def find_best_param(stock_name):
         "ARIMA",
         "Fundamental",
         "Fundamental+LDA News",
-        "Fundamental+LDA Twitter",
         "Fundamental+GDELT V1",
         "Fundamental+GDELT V2",
-        "Fundamental+LDA News+LDA Twitter",
         "Fundamental+LDA News+GDELT V1",
         "Fundamental+LDA News+GDELT V2",
-        "Fundamental+LDA Twitter+GDELT V1",
-        "Fundamental+LDA Twitter+GDELT V2",
         "Fundamental+GDELT V1+GDELT V2",
-        "Fundamental+LDA News+LDA Twitter+GDELT V1",
-        "Fundamental+LDA News+LDA Twitter+GDELT V2",
         "Fundamental+LDA News+GDELT V1+GDELT V2",
-        "Fundamental+LDA Twitter+GDELT V1+GDELT V2",
-        "Fundamental+LDA News+LDA Twitter+GDELT V1+GDELT V2"
     ]
 
     overall_best_df = pd.DataFrame(overall_best_params)
@@ -461,6 +453,7 @@ def merge_best_param():
             header = f"{stock_name}"
             try:
                 df = pd.read_csv(file_path)
+                df = df.dropna().reset_index().drop(columns=["index"])
                 df.insert(0, 'Stock', stock_name)
                 best_rows_list.append(df[df['Features'].str.contains('ARIMA')].copy())
                 best_rows_list.append(df[df['Features'].str.contains('Moving Average')].copy())
@@ -468,8 +461,8 @@ def merge_best_param():
                 filtered_row = filtered_df.loc[filtered_df['mape'].idxmin(), 'Features']
                 best_ml.append([stock_name, filtered_row])
                 best_rows_list.append(df[df['Features'] == filtered_row].copy())
-            except FileNotFoundError:
-                print(f"File not found for {stock_name}, skipping.")
+            except Exception as e:
+                print(f"Error {e} for {stock_name}, skipping.")
                 continue
             writer.writerow([header])
             writer.writerow(df.columns.tolist())
@@ -477,7 +470,7 @@ def merge_best_param():
                 writer.writerow(row)
     best_rows_df = pd.concat(best_rows_list, ignore_index=True)
     best_rows_df.to_csv(best_rows_path, index=False)
-    best_ml_df = pd.DataFrame(best_ml, columns=['Stock', 'Best ML Feature','param','mape','rmse'',da[0:0]','da[0:-5]','da[0:-10]','da[5:0]','da[10:0]'])
+    best_ml_df = pd.DataFrame(best_ml, columns=['Stock', 'Best ML Feature'])
     best_ml_df.to_csv(best_ml_path, index=False)
     print(f"Data merged and saved to {output_file_path}")
     print(f"Best rows excluding ARIMA and Moving Average saved to {best_rows_path}")
@@ -515,7 +508,7 @@ def get_stock_change():
     results_df.to_csv(output_path, index=False)
     print(f"Results saved to {output_path}")
   
-def stock_tuning(stock_name, features):
+def stock_tuning(stock_name, features, model_list):
     if not os.path.exists(PARAMETER_PATH + stock_name):
         os.makedirs(PARAMETER_PATH + stock_name) 
 
@@ -526,17 +519,18 @@ def stock_tuning(stock_name, features):
     for model_type, params_grid in MODEL_PARAM.items():
         print("Model: ", model_type)
         for params in ParameterGrid(params_grid):
-            if model_type == 'XGBModel':
+            if model_type == 'XGBModel' and 1 in model_list:
                 model = XGBModel(**params)
-            elif model_type == 'RandomForest':
+            elif model_type == 'RandomForest' and 2 in model_list:
                 model = RandomForest(**params)
-            elif model_type == 'LinearRegressionModel':
+            elif model_type == 'LinearRegressionModel' and 3 in model_list:
                 model = LinearRegressionModel(**params)
-            elif model_type == 'BlockRNNModel':
+            elif model_type == 'BlockRNNModel' and 4 in model_list:
                 model = BlockRNNModel(**params)
-            elif model_type == 'TiDEModel':
+            elif model_type == 'TiDEModel' and 5 in model_list:
                 model = TiDEModel(**params)
-    
+            else:
+                continue
 
             generate_path = PARAMETER_PATH+f"{stock_name}/"
             check_path = os.getcwd() + '/no logic model/'

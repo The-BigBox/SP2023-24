@@ -1,0 +1,18 @@
+Best MAPE Param:
+Param: window_size_1.csv
+MAPE: 2.8
+RMSE: 2.02
+Dir: 100.0
+
+Best RMSE Param:
+Param: window_size_1.csv
+MAPE: 2.8
+RMSE: 2.02
+Dir: 100.0
+
+Best Dir Param:
+Param: window_size_1.csv
+MAPE: 2.8
+RMSE: 2.02
+Dir: 100.0
+

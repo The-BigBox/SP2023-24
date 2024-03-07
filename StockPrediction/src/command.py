@@ -10,18 +10,10 @@ all_features_list = [[1],
                 [1, 2],
                 [1, 3],
                 [1, 4],
-                [1, 5],
                 [1, 2, 3],
                 [1, 2, 4],
-                [1, 2, 5],
                 [1, 3, 4],
-                [1, 3, 5],
-                [1, 4, 5],
-                [1, 2, 3, 4],
-                [1, 2, 3, 5],
-                [1, 2, 4, 5],
-                [1, 3, 4, 5],
-                [1, 2, 3, 4, 5]]
+                [1, 2, 3, 4]]
 
 def cal_execution_time(start_time):
     end_time = time.time()
@@ -75,7 +67,22 @@ def get_features_list():
         return get_features_list()
     return features_list
 
-def execute_command(command, stock, features):
+def get_model_type():
+    print("-> 1 : XGBoost")
+    print("-> 2 : RandomForest")
+    print("-> 3 : LinearRegression")
+    print("-> 4 : BlockRNN")
+    print("-> 5 : TiDE")
+    print("-----------------------------------------")
+    model = input("Enter model type: ")
+    try:
+        model_type = [int(item.strip()) for item in model.split(',')]
+    except ValueError:
+        print("Invalid input. Please enter numbers separated by commas.")
+        return get_model_type()
+    return model_type
+
+def execute_command(command, stock, features,model_type):
     global num_ex
     if command == "1":
         cmd.convert_weekly_data(stock)
@@ -84,7 +91,7 @@ def execute_command(command, stock, features):
     elif command == "3":
         cmd.arima_prediction(stock)
     elif command == "4":
-        num_ex += cmd.stock_tuning(stock, features)
+        num_ex += cmd.stock_tuning(stock, features, model_type)
     elif command == "5":
         cmd.find_best_param(stock)
     elif command == "6":
@@ -101,21 +108,22 @@ def main():
     print("Start date and time:", now)
     print("-----------------------------------------")
     features = get_features_list() if command == "4" else []
+    model_type = get_model_type() if command == "4" else []
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
             if features == "ALL":
                 for features in all_features_list:
-                    execute_command(command, each_stock, features)
+                    execute_command(command, each_stock, features, model_type)
             else:
-                execute_command(command, each_stock, features)
+                execute_command(command, each_stock, features, model_type)
         if command == "5":
             cmd.merge_best_param()
     else:
         if features == "ALL":
             for features in all_features_list:
-                execute_command(command, stock, features)
+                execute_command(command, stock, features, model_type)
         else:
-            execute_command(command, stock, features)
+            execute_command(command, stock, features, model_type)
     if command == "4":
         print(f"--> Summing number of experiment: {num_ex} <--")
     cal_execution_time(start_time)
