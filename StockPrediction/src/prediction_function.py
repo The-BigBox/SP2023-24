@@ -199,9 +199,9 @@ def finalize_csv(csv_path):
 
 def arima_prediction(stock_name):
     ARIMA_PARAM = {
-        'p': [6, 10], 
-        'd': [6, 10], 
-        'q': [2, 3], 
+        'p': [1,2,3,4,8,12,16,20,24], 
+        'd': [1,2,3,4], 
+        'q': [1,2,3,4,8,12,16,20,24], 
     }
 
     if not os.path.exists(PARAMETER_PATH + stock_name):
@@ -220,6 +220,15 @@ def arima_prediction(stock_name):
 
         params_str = '_'.join(f"{key}{val}" for key, val in params.items())
         filename = f"ARIMA_{params_str}"
+        check_path = os.getcwd() + '/no logic model/' + f"{stock_name}/ARIMA"
+
+        if os.path.exists(check_path+"/"+filename+".csv"):
+                import shutil
+                src = generate_path+"/"+filename+".csv"
+                dst = generate_path+"/"+filename+".csv"
+                shutil.copyfile(src, dst)
+                print("Skipped ", check_path,"/",filename,".csv" )
+                continue
 
         if os.path.exists(generate_path+"/"+filename+".csv"):
             continue
@@ -533,7 +542,7 @@ def stock_tuning(stock_name, features, model_list):
                 continue
 
             generate_path = PARAMETER_PATH+f"{stock_name}/"
-            check_path = os.getcwd() + '/no logic model/'
+            check_path = os.getcwd() + '/no logic model/' + f"{stock_name}/"
             if 1 in features:
                 generate_path = generate_path+"Fundamental"
                 check_path = check_path+"Fundamental"
