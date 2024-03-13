@@ -1,18 +1,18 @@
 Best MAPE Param:
-Param: RandomForest_lags12_lags_past_covariates2_output_chunk_length1.csv
-MAPE: 4.95
-RMSE: 6.35
-Dir: 45.71
+Param: LinearRegressionModel_lags1_lags_past_covariates4_output_chunk_length1.csv
+MAPE: 4.32
+RMSE: 5.65
+Dir: 60.0
 
 Best RMSE Param:
-Param: RandomForest_lags8_lags_past_covariates4_output_chunk_length1.csv
-MAPE: 5.02
-RMSE: 6.27
-Dir: 51.43
+Param: LinearRegressionModel_lags3_lags_past_covariates12_output_chunk_length1.csv
+MAPE: 4.57
+RMSE: 5.49
+Dir: 62.86
 
 Best Dir Param:
-Param: RandomForest_lags4_lags_past_covariates2_output_chunk_length1.csv
-MAPE: 4.96
-RMSE: 6.4
-Dir: 57.14
+Param: TiDEModel_input_chunk_length4_n_epochs15_output_chunk_length1.csv
+MAPE: 3323.88
+RMSE: 8335.85
+Dir: 71.43
 

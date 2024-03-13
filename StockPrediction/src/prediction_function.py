@@ -13,7 +13,7 @@ from darts.models import TiDEModel, BlockRNNModel, NBEATSModel, XGBModel, Regres
 
 ORIGINAL_DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA/'
 DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA_WEEKLY/'
-LDA_NEWS_PATH = os.getcwd() + '/data/Online Data/LDA News/News.csv'
+LDA_NEWS_PATH = os.getcwd() + '/data/Online Data/LDA News/News_filtered.csv'
 LDA_TWITTER_PATH = os.getcwd() + '/data/Online Data/LDA Twitter/Twitter.csv'
 GDELT_V1_PATH = os.getcwd() + '/data/Online Data/GDELT V1/gdelt_v1.csv'
 GDELT_V2_PATH = os.getcwd() + '/data/Online Data/GDELT V2/gdelt_v2.csv'
@@ -540,7 +540,7 @@ def stock_tuning(stock_name, features, model_list):
             if 1 in features:
                 generate_path = generate_path+"Fundamental"
             if 2 in features:
-                generate_path = generate_path+"+LDA News(Related Columns)"
+                generate_path = generate_path+"+LDA News(Related News)"
             if 3 in features:
                 generate_path = generate_path+"+GDELT V1"
             if 4 in features:
