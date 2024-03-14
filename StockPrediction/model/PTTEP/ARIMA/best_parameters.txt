@@ -11,8 +11,8 @@ RMSE: 7.61
 Dir: 54.29
 
 Best Dir Param:
-Param: ARIMA_d1_p8_q20.csv
-MAPE: 4.28
-RMSE: 9.06
-Dir: 65.71
+Param: ARIMA_d1_p20_q16.csv
+MAPE: 4.07
+RMSE: 8.8
+Dir: 68.57
 

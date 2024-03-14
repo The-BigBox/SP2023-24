@@ -38,6 +38,7 @@ PTT,Fundamental+LDA News+GDELT V1+GDELT V2,RandomForest_lags24_lags_past_covaria
 PTTEP,ARIMA,ARIMA_d1_p4_q1.csv,3.68,7.61,54.29,31.43,31.43,22.86,22.86
 PTTEP,Moving Average,window_size_1.csv,3.75,7.66,100.0,62.86,62.86,40.0,40.0
 PTTEP,Fundamental+LDA News+GDELT V1+GDELT V2,LinearRegressionModel_lags4_lags_past_covariates4_output_chunk_length1.csv,3.48,7.39,57.14,31.43,25.71,31.43,31.43
+PTTGC,ARIMA,ARIMA_d1_p1_q1.csv,3.05,1.96,51.43,14.29,14.29,37.14,37.14
 PTTGC,Moving Average,window_size_1.csv,3.06,1.96,100.0,40.0,40.0,60.0,60.0
 PTTGC,Fundamental+LDA News+GDELT V1+GDELT V2,XGBModel_lags24_lags_past_covariates1_output_chunk_length1.csv,3.33,2.19,60.0,31.43,25.71,34.29,34.29
 SCB,ARIMA,ARIMA_d1_p1_q3.csv,6.01,11.69,42.86,17.14,17.14,25.71,25.71

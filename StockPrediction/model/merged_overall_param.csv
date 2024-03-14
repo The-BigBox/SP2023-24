@@ -66,6 +66,7 @@ PTTEP,Fundamental+LDA News+GDELT V1+GDELT V2,LinearRegressionModel_lags4_lags_pa
 PTTGC
 Stock,Features,param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
 PTTGC,Moving Average,window_size_1.csv,3.06,1.96,100.0,40.0,40.0,60.0,60.0
+PTTGC,ARIMA,ARIMA_d1_p1_q1.csv,3.05,1.96,51.43,14.29,14.29,37.14,37.14
 PTTGC,Fundamental+LDA News+GDELT V1+GDELT V2,XGBModel_lags24_lags_past_covariates1_output_chunk_length1.csv,3.33,2.19,60.0,31.43,25.71,34.29,34.29
 SCB
 Stock,Features,param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
