@@ -83,10 +83,10 @@ def load_data(stock_name):
     stock_id = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Stock_ID'].iloc[0]
     industry_name = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Industry_Name'].iloc[0]
     # 1 use all col
-    lda_news_df = pd.read_csv(LDA_NEWS_PATH)
+    # lda_news_df = pd.read_csv(LDA_NEWS_PATH)
     # 2 use only col that related (feature selection)
-    # lda_news_column = ['Date', 'Topic_5', 'Topic_4', 'Topic_38', 'Topic_42', 'Topic_88', 'Topic_90', 'Topic_111', 'Topic_119', 'Topic_128', 'Topic_159', 'Topic_172', 'Topic_173', 'Topic_196', 'Topic_232', 'Topic_240', 'Topic_259', 'Topic_293', 'Topic_294', 'Topic_295', 'Topic_330', 'Topic_373', 'Topic_382']
-    # lda_news_df = pd.read_csv(LDA_NEWS_PATH, usecols=lda_news_column)
+    lda_news_column = ['Date', 'Topic_5', 'Topic_4', 'Topic_38', 'Topic_42', 'Topic_88', 'Topic_90', 'Topic_111', 'Topic_119', 'Topic_128', 'Topic_159', 'Topic_172', 'Topic_173', 'Topic_196', 'Topic_232', 'Topic_240', 'Topic_259', 'Topic_293', 'Topic_294', 'Topic_295', 'Topic_330', 'Topic_373', 'Topic_382']
+    lda_news_df = pd.read_csv(LDA_NEWS_PATH, usecols=lda_news_column)
     prefix = "news"
     lda_news_df.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in lda_news_df.columns]
     lda_twitter_df = pd.read_csv(LDA_TWITTER_PATH)
@@ -540,7 +540,7 @@ def stock_tuning(stock_name, features, model_list):
             if 1 in features:
                 generate_path = generate_path+"Fundamental"
             if 2 in features:
-                generate_path = generate_path+"+LDA News(Related News)"
+                generate_path = generate_path+"+LDA News(Related News and Columns)"
             if 3 in features:
                 generate_path = generate_path+"+GDELT V1"
             if 4 in features:
