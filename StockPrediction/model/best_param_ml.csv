@@ -1,16 +1,16 @@
 Stock,Best ML Feature
-ADVANC,Fundamental+LDA News+GDELT V1+GDELT V2
-BANPU,Fundamental+LDA News+GDELT V1+GDELT V2
+ADVANC,Fundamental
+BANPU,Fundamental
 BH,Fundamental+LDA News+GDELT V1+GDELT V2
 BTS,Fundamental+LDA News+GDELT V1+GDELT V2
-CBG,Fundamental+LDA News+GDELT V1+GDELT V2
+CBG,Fundamental
 CPALL,Fundamental+LDA News+GDELT V1+GDELT V2
 CPF,Fundamental+LDA News+GDELT V1+GDELT V2
 INTUCH,Fundamental+LDA News+GDELT V1+GDELT V2
 IVL,Fundamental+LDA News+GDELT V1+GDELT V2
 KBANK,Fundamental+LDA News+GDELT V1+GDELT V2
 LH,Fundamental+LDA News+GDELT V1+GDELT V2
-PTT,Fundamental+LDA News+GDELT V1+GDELT V2
+PTT,Fundamental
 PTTEP,Fundamental+LDA News+GDELT V1+GDELT V2
 PTTGC,Fundamental+LDA News+GDELT V1+GDELT V2
 SCB,Fundamental+LDA News+GDELT V1+GDELT V2

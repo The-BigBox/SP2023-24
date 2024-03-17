@@ -1,7 +1,7 @@
 Features,param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
 Moving Average,window_size_1.csv,2.09,6.29,100.0,48.57,48.57,65.71,65.71
 ARIMA,ARIMA_d1_p1_q1.csv,2.03,6.2,68.57,34.29,34.29,34.29,34.29
-,,,,,,,,
+Fundamental,RandomForest_lags1_lags_past_covariates24_output_chunk_length1.csv,1.98,5.58,80.0,31.43,31.43,48.57,48.57
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
