@@ -39,6 +39,7 @@ MODEL_PARAM = {
         'lags': [1,2,3,4,8,12,16,20,24], 
         'lags_past_covariates': [1,2,3,4,8,12,16,20,24], 
         'output_chunk_length': [1], 
+        'n_jobs' : [-1], 
     },
 
     #Vector
@@ -305,8 +306,9 @@ def calculate_directional_accuracy_with_thresholds(actual, forecast):
         for i in range(len(forecast)):
             actual_change = ((actual[i + 1] - actual[i]) / actual[i]) * 100
             predicted_change = ((forecast[i] - actual[i]) / actual[i]) * 100
-            if (actual_change >= up and predicted_change >= up) or \
-                (actual_change <= down and predicted_change <= down):
+            if (actual_change > up and predicted_change > up) or \
+                (actual_change < down and predicted_change < down) or\
+                (actual_change == predicted_change):
                 acc += 1
 
         da = round(acc / len(forecast) * 100, 2)
@@ -549,7 +551,9 @@ def stock_tuning(stock_name, features, model_list):
             if not os.path.exists(generate_path):
                 os.makedirs(generate_path) 
 
-            params_str = '_'.join(f"{key}{val}" for key, val in params.items())
+            params_for_filename = {k: v for k, v in params.items() if k != 'n_jobs'}
+            params_str = '_'.join(f"{key}{val}" for key, val in params_for_filename.items())
+            # params_str = '_'.join(f"{key}{val}" for key, val in params.items())
             filename = f"{model_type}_{params_str}"
 
             if os.path.exists(generate_path+"/"+filename+".csv"):

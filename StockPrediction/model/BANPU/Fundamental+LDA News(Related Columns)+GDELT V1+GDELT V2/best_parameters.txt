@@ -11,8 +11,8 @@ RMSE: 0.56
 Dir: 62.86
 
 Best Dir Param:
-Param: RandomForest_lags1_lags_past_covariates24_output_chunk_length1.csv
-MAPE: 3.65
-RMSE: 0.6
-Dir: 71.43
+Param: RandomForest_lags2_lags_past_covariates8_output_chunk_length1.csv
+MAPE: 3.6
+RMSE: 0.59
+Dir: 68.57
 
