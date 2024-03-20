@@ -1,6 +1,6 @@
 Features,param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
-Moving Average,window_size_1.csv,2.32,0.87,100.0,54.29,54.29,65.71,65.71
-ARIMA,ARIMA_d1_p2_q1.csv,2.3,0.83,68.57,42.86,42.86,25.71,25.71
+Moving Average,window_size_1.csv,2.32,0.87,20.0,20.0,20.0,20.0,20.0
+ARIMA,ARIMA_d1_p2_q1.csv,2.3,0.83,48.57,34.29,34.29,14.29,14.29
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
@@ -8,4 +8,4 @@ ARIMA,ARIMA_d1_p2_q1.csv,2.3,0.83,68.57,42.86,42.86,25.71,25.71
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
-Fundamental+LDA News+GDELT V1+GDELT V2,RandomForest_lags3_lags_past_covariates1_output_chunk_length1.csv,2.48,0.85,71.43,40.0,40.0,34.29,34.29
+Fundamental+LDA News+GDELT V1+GDELT V2,RandomForest_lags3_lags_past_covariates1_output_chunk_length1.csv,2.48,0.85,51.43,31.43,31.43,25.71,25.71
