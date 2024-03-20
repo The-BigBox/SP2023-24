@@ -54,7 +54,7 @@ MODEL_PARAM = {
         'model': ['LSTM'],
         'input_chunk_length': [1,2,3,4,8,12,16,20,24], 
         'output_chunk_length': [1], 
-        'n_epochs': [15],
+        'n_epochs': [15, 50, 100, 150],
     },
 
     #Transformer
