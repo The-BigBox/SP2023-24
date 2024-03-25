@@ -570,3 +570,46 @@ def stock_tuning(stock_name, features, model_list):
     print(f"Completed tune for {num_ex} parameters")       
     print("-----------------------------------------")
     return num_ex
+
+def backtest(stock_name, features, model_type):
+    print("Not done yet")
+    backtest_set = ['ML', 'Trad']
+    if not os.path.exists(BACKTEST_PATH + stock_name):
+        os.makedirs(BACKTEST_PATH + stock_name) 
+    
+    if model_type == 'XGBModel':
+        lags = int(input("Enter lags: "))
+        lags_past_covariates = int(input("Enter lags_past_covariates: "))
+        model = XGBModel(lags = lags, lags_past_covariates = lags_past_covariates, output_chunk_length = 1)
+    elif model_type == 'RandomForest':
+        lags = int(input("Enter lags: "))
+        lags_past_covariates = int(input("Enter lags_past_covariates: "))
+        model = RandomForest(lags = lags, lags_past_covariates = lags_past_covariates, output_chunk_length = 1, n_jobs = -1)
+    elif model_type == 'LinearRegressionModel':
+        lags = int(input("Enter lags: "))
+        lags_past_covariates = int(input("Enter lags_past_covariates: "))
+        model = LinearRegressionModel(lags = lags, lags_past_covariates = lags_past_covariates, output_chunk_length = 1)
+    elif model_type == 'BlockRNNModel':
+        input_chunk_length = int(input("Enter input_chunk_length: "))
+        model = BlockRNNModel(model = 'LSTM', input_chunk_length = input_chunk_length, output_chunk_length = 1, n_epochs = 15)
+    elif model_type == 'TiDEModel':
+        input_chunk_length = int(input("Enter input_chunk_length: "))
+        model = TiDEModel(input_chunk_length = input_chunk_length, output_chunk_length = 1, n_epochs = 15)
+
+    generate_path = BACKTEST_PATH+f"{stock_name}/"
+
+    if not os.path.exists(generate_path):
+        os.makedirs(generate_path) 
+
+    filename = "InsightWave"
+
+    if os.path.exists(generate_path+"/"+filename+".csv"):
+        return
+
+    for split in range(TEST_SIZE, 0, -1):
+        stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
+        training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features)
+        predictions = predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset)
+        generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
+    finalize_csv(generate_path+"/"+filename+".csv") 
+    print("-----------------------------------------")

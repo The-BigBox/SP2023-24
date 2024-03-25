@@ -3,9 +3,9 @@ Moving Average,window_size_1.csv,2.09,6.29,14.29,14.29,14.29,14.29,14.29
 ARIMA,ARIMA_d1_p1_q1.csv,2.03,6.2,51.43,25.71,25.71,25.71,25.71
 Fundamental,RandomForest_lags1_lags_past_covariates24_output_chunk_length1.csv,1.98,5.58,62.86,28.57,28.57,34.29,34.29
 ,,,,,,,,
+Fundamental+GDELT V1,RandomForest_lags24_lags_past_covariates1_output_chunk_length1.csv,1.98,5.53,71.43,28.57,28.57,42.86,42.86
+Fundamental+GDELT V2,RandomForest_lags24_lags_past_covariates4_output_chunk_length1.csv,1.97,5.55,68.57,31.43,31.43,37.14,37.14
 ,,,,,,,,
 ,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
+Fundamental+GDELT V1+GDELT V2,RandomForest_lags24_lags_past_covariates1_output_chunk_length1.csv,2.0,5.52,68.57,25.71,25.71,42.86,42.86
 Fundamental+LDA News+GDELT V1+GDELT V2,RandomForest_lags24_lags_past_covariates3_output_chunk_length1.csv,2.26,6.0,54.29,25.71,25.71,28.57,28.57

@@ -33,10 +33,11 @@ def get_valid_command():
     print("4 : Tuning machine learning")
     print("5 : Find best parameter")
     print("6 : Merge best parameter")
-    print("7 : Get stock change weekly")
+    print("7 : Get all stock change weekly")
+    print("8 : Backtest in buying stock")
     print("-----------------------------------------")
     command = input("Enter the command: ")
-    if command not in ["1", "2", "3", "4", "5", "6", "7"]:
+    if command not in ["1", "2", "3", "4", "5", "6", "7", "8"]:
         print("Invalid command. Please try again.")
         return get_valid_command()
     return command
@@ -82,7 +83,7 @@ def get_model_type():
         return get_model_type()
     return model_type
 
-def execute_command(command, stock, features,model_type):
+def execute_command(command, stock, features, model_type):
     global num_ex
     if command == "1":
         cmd.convert_weekly_data(stock)
@@ -98,6 +99,8 @@ def execute_command(command, stock, features,model_type):
         cmd.merge_best_param()
     elif command == "7":
         cmd.get_stock_change()
+    elif command == "8":
+        cmd.backtest(stock, features, model_type)
 
 def main():
     command = get_valid_command()
@@ -107,8 +110,8 @@ def main():
     now = datetime.now()
     print("Start date and time:", now)
     print("-----------------------------------------")
-    features = get_features_list() if command == "4" else []
-    model_type = get_model_type() if command == "4" else []
+    features = get_features_list() if command == "4" or command == "8"else []
+    model_type = get_model_type() if command == "4" or command =="8" else []
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
             if features == "ALL":
