@@ -560,7 +560,6 @@ def stock_tuning(stock_name, features, model_list):
                 continue
 
             num_ex += 1
-
             for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
                 stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
                 training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features)

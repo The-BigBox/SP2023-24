@@ -1,11 +1,11 @@
 Features,param,mape,rmse,da[0:0],da[0:-5],da[0:-10],da[5:0],da[10:0]
 Moving Average,window_size_1.csv,2.75,5.55,5.71,5.71,5.71,5.71,5.71
 ARIMA,ARIMA_d1_p4_q3.csv,2.61,5.35,62.86,37.14,37.14,25.71,25.71
+Fundamental,RandomForest_lags2_lags_past_covariates24_output_chunk_length1.csv,2.74,6.56,60.0,34.29,34.29,25.71,25.71
+,,,,,,,,
+Fundamental+GDELT V1,RandomForest_lags16_lags_past_covariates2_output_chunk_length1.csv,2.75,6.61,60.0,20.0,20.0,40.0,40.0
+Fundamental+GDELT V2,RandomForest_lags4_lags_past_covariates1_output_chunk_length1.csv,2.73,6.57,60.0,25.71,25.71,34.29,34.29
 ,,,,,,,,
 ,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
-,,,,,,,,
+Fundamental+GDELT V1+GDELT V2,RandomForest_lags1_lags_past_covariates2_output_chunk_length1.csv,2.67,6.45,62.86,22.86,22.86,40.0,40.0
 Fundamental+LDA News+GDELT V1+GDELT V2,RandomForest_lags1_lags_past_covariates1_output_chunk_length1.csv,2.83,7.28,60.0,25.71,25.71,34.29,34.29
