@@ -1,0 +1,18 @@
+Best MAPE Param:
+Param: LinearRegressionModel_lags4_lags_past_covariates1_output_chunk_length1.csv
+MAPE: 3.99
+RMSE: 7.81
+Dir: 54.29
+
+Best RMSE Param:
+Param: LinearRegressionModel_lags1_lags_past_covariates1_output_chunk_length1.csv
+MAPE: 4.05
+RMSE: 7.77
+Dir: 51.43
+
+Best Dir Param:
+Param: LinearRegressionModel_lags8_lags_past_covariates1_output_chunk_length1.csv
+MAPE: 4.08
+RMSE: 8.0
+Dir: 60.0
+

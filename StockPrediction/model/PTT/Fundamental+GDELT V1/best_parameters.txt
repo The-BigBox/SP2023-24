@@ -1,0 +1,18 @@
+Best MAPE Param:
+Param: RandomForest_lags2_lags_past_covariates2_output_chunk_length1.csv
+MAPE: 2.85
+RMSE: 1.34
+Dir: 57.14
+
+Best RMSE Param:
+Param: RandomForest_lags2_lags_past_covariates2_output_chunk_length1.csv
+MAPE: 2.85
+RMSE: 1.34
+Dir: 57.14
+
+Best Dir Param:
+Param: RandomForest_lags20_lags_past_covariates24_output_chunk_length1.csv
+MAPE: 3.03
+RMSE: 1.45
+Dir: 65.71
+
