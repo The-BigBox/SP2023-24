@@ -20,6 +20,7 @@ GDELT_V2_PATH = os.getcwd() + '/data/Online Data/GDELT V2/gdelt_v2.csv'
 ID_PATH = os.getcwd() + '/data/Fundamental+Technical Data/ID_Name.csv'
 RESULT_PATH = os.getcwd() + '/result/'
 PARAMETER_PATH = os.getcwd() + '/model/'
+BACKTEST_PATH = os.getcwd() + '/backtest/'
 FOCUS_COMPONENT = 'Close'
 RETAIN_COMPONENTS = ["Open", "High", "Low", "PE", "PBV", "T_EPS", "FSCORE", "Vol",
                            "Buy Vol", "Sell Vol", "ATO/ATC", "EMA25", "EMA50", "EMA200", "MACD", "RSI"]
@@ -570,9 +571,8 @@ def stock_tuning(stock_name, features, model_list):
     print("-----------------------------------------")
     return num_ex
 
-def backtest(stock_name, features, model_type):
+def gen_test_for_backtest():
     print("Not done yet")
-    backtest_set = ['ML', 'Trad']
     if not os.path.exists(BACKTEST_PATH + stock_name):
         os.makedirs(BACKTEST_PATH + stock_name) 
     
@@ -594,7 +594,7 @@ def backtest(stock_name, features, model_type):
     elif model_type == 'TiDEModel':
         input_chunk_length = int(input("Enter input_chunk_length: "))
         model = TiDEModel(input_chunk_length = input_chunk_length, output_chunk_length = 1, n_epochs = 15)
-
+    
     generate_path = BACKTEST_PATH+f"{stock_name}/"
 
     if not os.path.exists(generate_path):
@@ -612,3 +612,8 @@ def backtest(stock_name, features, model_type):
         generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
     finalize_csv(generate_path+"/"+filename+".csv") 
     print("-----------------------------------------")
+
+def backtest(stock_name, features, model_type):
+    gen_test_for_backtest()
+
+    

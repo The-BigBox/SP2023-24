@@ -100,7 +100,7 @@ def execute_command(command, stock, features, model_type):
     elif command == "7":
         cmd.get_stock_change()
     elif command == "8":
-        cmd.backtest(stock, features, model_type)
+        cmd.backtest()
 
 def main():
     command = get_valid_command()
@@ -110,8 +110,8 @@ def main():
     now = datetime.now()
     print("Start date and time:", now)
     print("-----------------------------------------")
-    features = get_features_list() if command == "4" or command == "8"else []
-    model_type = get_model_type() if command == "4" or command =="8" else []
+    features = get_features_list() if command == "4" else []
+    model_type = get_model_type() if command == "4" else []
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
             if features == "ALL":
