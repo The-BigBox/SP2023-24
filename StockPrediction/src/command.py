@@ -100,7 +100,7 @@ def execute_command(command, stock, features, model_type):
     elif command == "7":
         cmd.get_stock_change()
     elif command == "8":
-        cmd.backtest()
+        cmd.backtest(stock)
 
 def main():
     command = get_valid_command()
