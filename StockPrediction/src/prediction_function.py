@@ -630,32 +630,32 @@ def gen_test_for_backtest(stock_name):
         finalize_csv(generate_path+"/"+filename+".csv")
 
     # ARIMA
-    filename = "ARIMA"
-    if os.path.exists(generate_path+"/"+filename+".csv"):
-        print("Done already.")
+    # filename = "ARIMA"
+    # if os.path.exists(generate_path+"/"+filename+".csv"):
+    #     print("Done already.")
     
-    else:
-        print("Generate Backtest ARIMA for",stock_name)
-        p = int(input("Enter p value: "))
-        d = int(input("Enter d value: "))
-        q = int(input("Enter q value: "))
+    # else:
+    #     print("Generate Backtest ARIMA for",stock_name)
+    #     p = int(input("Enter p value: "))
+    #     d = int(input("Enter d value: "))
+    #     q = int(input("Enter q value: "))
  
     
-        model = ARIMA(p = p, d = d, q = q) 
+    #     model = ARIMA(p = p, d = d, q = q) 
 
-        for split in range(TEST_SIZE, 0, -1):
-            stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
-            training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, [1])
+    #     for split in range(TEST_SIZE, 0, -1):
+    #         stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
+    #         training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, [1])
 
-            try:
-                model.fit(training_scaled)
-                forecast = model.predict(PREDICT_SIZE)
-                predictions = scaler_dataset.inverse_transform(forecast)
-            except Exception as e:
-                print(f"Error fitting ARIMA model with params {params}: {e}")
+    #         try:
+    #             model.fit(training_scaled)
+    #             forecast = model.predict(PREDICT_SIZE)
+    #             predictions = scaler_dataset.inverse_transform(forecast)
+    #         except Exception as e:
+    #             print(f"Error fitting ARIMA model with params {params}: {e}")
 
-            generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
-        finalize_csv(generate_path+"/"+filename+".csv")        
+    #         generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
+    #     finalize_csv(generate_path+"/"+filename+".csv")        
     print("-----------------------------------------")
 
 def backtest(stock):
