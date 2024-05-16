@@ -34,13 +34,14 @@ def get_valid_command():
     print("5 : Find best parameter")
     print("6 : Merge best parameter")
     print("7 : Get all stock change weekly")
-    print("8 : Backtest in buying stock")
+    print("8 : Generate Backtest in buying stock")
+    print("9 : Calculate the Backtest result")
     print("-----------------------------------------")
-    command = input("Enter the command: ")
-    if command not in ["1", "2", "3", "4", "5", "6", "7", "8"]:
+    while True:
+        command = input("Enter the command: ")
+        if command in ["1", "2", "3", "4", "5", "6", "7", "8", "9"]:
+            return command
         print("Invalid command. Please try again.")
-        return get_valid_command()
-    return command
 
 def get_valid_stock(command):
     stock = ""
@@ -68,6 +69,19 @@ def get_features_list():
         return get_features_list()
     return features_list
 
+def get_news_version():
+    print("-> 1 : All News")
+    print("-> 2 : Filtered News from Econ Topic from Topic Distribution.")
+    print("-> 3 : Filtered News from Econ News from expert.")
+    print("-> 4 : Filtered News from Econ News and Econ Topic.")
+    print("-----------------------------------------")
+    news_version = input("Enter news version: ")
+    if news_version in ["1", "2", "3", "4"]:
+        return news_version
+    else:
+        print("Invalid input. Please enter only number.")
+        return get_features_list()
+
 def get_model_type():
     print("-> 1 : XGBoost")
     print("-> 2 : RandomForest")
@@ -83,7 +97,7 @@ def get_model_type():
         return get_model_type()
     return model_type
 
-def execute_command(command, stock, features, model_type):
+def execute_command(command, stock, features, model_type, news_version):
     global num_ex
     if command == "1":
         cmd.convert_weekly_data(stock)
@@ -92,7 +106,7 @@ def execute_command(command, stock, features, model_type):
     elif command == "3":
         cmd.arima_prediction(stock)
     elif command == "4":
-        num_ex += cmd.stock_tuning(stock, features, model_type)
+        num_ex += cmd.stock_tuning(stock, features, model_type, news_version)
     elif command == "5":
         cmd.find_best_param(stock)
     elif command == "6":
@@ -100,7 +114,9 @@ def execute_command(command, stock, features, model_type):
     elif command == "7":
         cmd.get_stock_change()
     elif command == "8":
-        cmd.backtest(stock)
+        cmd.gen_test_for_backtest(stock)
+    elif command == "9":
+        cmd.cal_backtest(stock)
 
 def main():
     command = get_valid_command()
@@ -111,22 +127,26 @@ def main():
     print("Start date and time:", now)
     print("-----------------------------------------")
     features = get_features_list() if command == "4" else []
+    if "2" in features:
+        news_version = get_news_version() if command == "4" else []
+    else:
+        news_version = "1"
     model_type = get_model_type() if command == "4" else []
     if stock == "ALL":
         for each_stock in cmd.STOCK_LIST:
             if features == "ALL":
                 for features in all_features_list:
-                    execute_command(command, each_stock, features, model_type)
+                    execute_command(command, each_stock, features, model_type, news_version)
             else:
-                execute_command(command, each_stock, features, model_type)
+                execute_command(command, each_stock, features, model_type, news_version)
         if command == "5":
             cmd.merge_best_param()
     else:
         if features == "ALL":
             for features in all_features_list:
-                execute_command(command, stock, features, model_type)
+                execute_command(command, stock, features, model_type, news_version)
         else:
-            execute_command(command, stock, features, model_type)
+            execute_command(command, stock, features, model_type, news_version)
     if command == "4":
         print(f"--> Summing number of experiment: {num_ex} <--")
     cal_execution_time(start_time)

@@ -1,5 +1,5 @@
 /venv
-/StockPrediction/src/__pycache__
+StockPrediction/src/__pycache__
 /DataCollection/data
 /DataCollection/tmp
 /TopicModeling/data

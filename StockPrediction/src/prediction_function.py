@@ -4,21 +4,19 @@ import numpy as np
 import pandas as pd
 from darts import TimeSeries
 from darts.models import ARIMA
-import matplotlib.pyplot as plt
-from darts.metrics import mape, mse
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import ParameterGrid
 from darts.dataprocessing.transformers import Scaler
-from darts.models import TiDEModel, BlockRNNModel, NBEATSModel, XGBModel, RegressionModel, LinearRegressionModel, RandomForest
+from darts.models import TiDEModel, BlockRNNModel, XGBModel, LinearRegressionModel, RandomForest
 
 ORIGINAL_DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA/'
 DATA_PATH = os.getcwd() + '/data/Fundamental+Technical Data/STOCK_DATA_WEEKLY/'
-LDA_NEWS_PATH = os.getcwd() + '/data/Online Data/LDA News/News_filtered.csv'
+LDA_NEWS_1_2_PATH = os.getcwd() + '/data/Online Data/LDA News/News.csv'
+LDA_NEWS_3_4_PATH = os.getcwd() + '/data/Online Data/LDA News/News_filtered.csv'
 LDA_TWITTER_PATH = os.getcwd() + '/data/Online Data/LDA Twitter/Twitter.csv'
 GDELT_V1_PATH = os.getcwd() + '/data/Online Data/GDELT V1/gdelt_v1.csv'
 GDELT_V2_PATH = os.getcwd() + '/data/Online Data/GDELT V2/gdelt_v2.csv'
 ID_PATH = os.getcwd() + '/data/Fundamental+Technical Data/ID_Name.csv'
-RESULT_PATH = os.getcwd() + '/result/'
 PARAMETER_PATH = os.getcwd() + '/model/'
 BACKTEST_PATH = os.getcwd() + '/backtest/'
 FOCUS_COMPONENT = 'Close'
@@ -66,42 +64,47 @@ MODEL_PARAM = {
     },  
 }
 
-def convert_weekly_data(stock_name):
-    if not os.path.exists(DATA_PATH):
-        os.makedirs(DATA_PATH) 
-    
+def convert_weekly_data(stock_name): 
     stock_data = pd.read_csv(ORIGINAL_DATA_PATH + stock_name + ".csv")
     stock_data['Date'] = pd.to_datetime(stock_data['Date'])
     
     # Select every 7th data point from stock data
     stock_data = stock_data.iloc[::7, :]
-    
+
+    if not os.path.exists(DATA_PATH):
+        os.makedirs(DATA_PATH) 
     stock_data.to_csv(DATA_PATH + stock_name + ".csv", index=False)
     print("Converted to weekly for ", stock_name)
       
-def load_data(stock_name):
+def load_data(stock_name, news_version):
     stock_data = pd.read_csv(os.path.join(DATA_PATH, (stock_name + ".csv")))
     id_name_map = pd.read_csv(ID_PATH)
+
     stock_id = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Stock_ID'].iloc[0]
-    industry_name = id_name_map.loc[id_name_map['Stock_Name'].str.strip() == stock_name, 'Industry_Name'].iloc[0]
-    # 1 use all col
-    # lda_news_df = pd.read_csv(LDA_NEWS_PATH)
-    # 2 use only col that related (feature selection)
-    lda_news_column = ['Date', 'Topic_5', 'Topic_4', 'Topic_38', 'Topic_42', 'Topic_88', 'Topic_90', 'Topic_111', 'Topic_119', 'Topic_128', 'Topic_159', 'Topic_172', 'Topic_173', 'Topic_196', 'Topic_232', 'Topic_240', 'Topic_259', 'Topic_293', 'Topic_294', 'Topic_295', 'Topic_330', 'Topic_373', 'Topic_382']
-    lda_news_df = pd.read_csv(LDA_NEWS_PATH, usecols=lda_news_column)
+
+    expert_chosen_news_column = ['Date', 'Topic_5', 'Topic_4', 'Topic_38', 'Topic_42', 'Topic_88', 'Topic_90', 'Topic_111', 'Topic_119', 'Topic_128', 'Topic_159', 'Topic_172', 'Topic_173', 'Topic_196', 'Topic_232', 'Topic_240', 'Topic_259', 'Topic_293', 'Topic_294', 'Topic_295', 'Topic_330', 'Topic_373', 'Topic_382']
+    if news_version == "1":
+        lda_news_df = pd.read_csv(LDA_NEWS_1_2_PATH)
+    elif news_version == "2":
+        lda_news_df = pd.read_csv(LDA_NEWS_1_2_PATH, usecols=expert_chosen_news_column)
+    elif news_version == "3":
+        lda_news_df = pd.read_csv(LDA_NEWS_3_4_PATH)
+    elif news_version == "4":
+        lda_news_df = pd.read_csv(LDA_NEWS_3_4_PATH, usecols=expert_chosen_news_column)
+
     prefix = "news"
     lda_news_df.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in lda_news_df.columns]
-    lda_twitter_df = pd.read_csv(LDA_TWITTER_PATH)
-    prefix = "twitter"
-    lda_twitter_df.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in lda_twitter_df.columns]
+    
     GDELTv1 = pd.read_csv(GDELT_V1_PATH)
     prefix = "gdeltv1"
     GDELTv1.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in GDELTv1.columns]
+    
     GDELTv2 = pd.read_csv(GDELT_V2_PATH)
     prefix = "gdeltv2"
     GDELTv2.columns =  [f"{prefix}_{col}" if col != 'Date' else col for col in GDELTv2.columns]
+
     data_df = stock_data.copy()
-    return stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2
+    return stock_data, stock_id, data_df, lda_news_df, GDELTv1, GDELTv2
 
 def preprocess_online_data(data_df, online_data_df):
     if 'Date' in data_df.columns:
@@ -122,7 +125,7 @@ def preprocess_online_data(data_df, online_data_df):
 
     return summed_df
 
-def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features):
+def preprocess_data(data, data_df,  lda_news_df, GDELTv1, GDELTv2, split, features):
     data = data.dropna()
     serie = data[FOCUS_COMPONENT]
     past_covariate = data[RETAIN_COMPONENTS].apply(pd.to_numeric, errors='coerce').ffill().bfill()
@@ -130,10 +133,6 @@ def preprocess_data(data, data_df,  lda_news_df, lda_twitter_df, GDELTv1, GDELTv
     if 2 in features:
         updated_lda_news_df = preprocess_online_data(data_df, lda_news_df)
         past_covariate = past_covariate.join(updated_lda_news_df.reset_index(drop=True).drop(columns='Date'))
-
-    # if 3 in features:
-    #     updated_lda_twitter_df = preprocess_online_data(data_df, lda_twitter_df)
-    #     past_covariate = past_covariate.join(updated_lda_twitter_df.reset_index(drop=True).drop(columns='Date'))
 
     if 3 in features:
         updated_GDELTv1 = preprocess_online_data(data_df, GDELTv1)
@@ -233,8 +232,8 @@ def arima_prediction(stock_name):
         num_ex += 1
 
         for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
-            stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
-            training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, [1])
+            stock_data, stock_id, data_df, lda_news_df, GDELTv1, GDELTv2 = load_data(stock_name, "1")
+            training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, GDELTv1, GDELTv2, split, [1])
 
             try:
                 model.fit(training_scaled)
@@ -255,7 +254,7 @@ def moving_average(stock):
     window_size = [1,2,3,4,8,12,16,20,24]
 
     for size in window_size:
-        stock_data, stock_id, _, _, _, _, _ = load_data(stock)
+        stock_data, stock_id, _, _, _, _, _ = load_data(stock, "1")
         df = stock_data[['Date', 'Close']].iloc[TRAINING_SIZE-size:-TEST_SIZE]
         df['Moving_Average'] = df['Close'].rolling(window=size).mean()
         df = df.dropna()
@@ -269,34 +268,6 @@ def moving_average(stock):
 
         output.to_csv(f'{PARAMETER_PATH}/{stock}/Moving Average/window_size_{size}.csv')
     print("Finished caculate Moving Average for ", stock)
-
-def plot_graph(dates, series, val, arima_pred, new_model_pred):
-    plt.figure(figsize=(10, 6))
-    plt.plot(dates[-300:-60], series.values()[-300:-60], label='Actual (Last 300 days)')
-    plt.plot(dates[-60:], val.values(), label='Actual (Last 60 days)', color='blue')
-    
-    last_actual_value = series.values()[-61]
-    arima_pred_with_last = np.insert(arima_pred.values(), 0, last_actual_value)
-    new_model_pred_with_last = np.insert(new_model_pred.values(), 0, last_actual_value)
-
-    plt.plot(dates[-61:], arima_pred_with_last, label='ARIMA Forecast', lw=2, color='red')
-    plt.plot(dates[-61:], new_model_pred_with_last, label='New Model Forecast', lw=2, color='green')
-    plt.title('Stock Price Prediction using ARIMA vs New Model')
-    plt.xlabel('Date')
-    plt.ylabel('Price')
-    plt.legend(loc='upper left', bbox_to_anchor=(1,1))
-    plt.show()
-
-def calculate_directional_accuracy(actual, forecast):  
-    acc = 0
-    for i in range(len(forecast)):
-        actual_change = actual[i + 1] - actual[i]
-        predicted_change = forecast[i] - actual[i]
-        if (actual_change > 0 and predicted_change > 0) or (actual_change < 0 and predicted_change < 0) or (actual_change == 0 and predicted_change == 0):
-            acc += 1
-
-    da = round(acc / len(forecast) * 100, 2)
-    return da
 
 def calculate_directional_accuracy_with_thresholds(actual, forecast):
     thresholds = [0, 5, 10] 
@@ -515,7 +486,7 @@ def get_stock_change():
     results_df.to_csv(output_path, index=False)
     print(f"Results saved to {output_path}")
   
-def stock_tuning(stock_name, features, model_list):
+def stock_tuning(stock_name, features, model_list, news_version):
     if not os.path.exists(PARAMETER_PATH + stock_name):
         os.makedirs(PARAMETER_PATH + stock_name) 
 
@@ -543,7 +514,14 @@ def stock_tuning(stock_name, features, model_list):
             if 1 in features:
                 generate_path = generate_path+"Fundamental"
             if 2 in features:
-                generate_path = generate_path+"+LDA News(Related News and Columns)"
+                if news_version == "1":
+                    generate_path = generate_path+"+LDA News"
+                elif news_version == "2":
+                    generate_path = generate_path+"+LDA News(Related Columns)"
+                elif news_version == "3":
+                    generate_path = generate_path+"+LDA News(Related News)"
+                elif news_version == "4":
+                    generate_path = generate_path+"+LDA News(Related News and Columns)"
             if 3 in features:
                 generate_path = generate_path+"+GDELT V1"
             if 4 in features:
@@ -554,7 +532,6 @@ def stock_tuning(stock_name, features, model_list):
 
             params_for_filename = {k: v for k, v in params.items() if k != 'n_jobs'}
             params_str = '_'.join(f"{key}{val}" for key, val in params_for_filename.items())
-            # params_str = '_'.join(f"{key}{val}" for key, val in params.items())
             filename = f"{model_type}_{params_str}"
 
             if os.path.exists(generate_path+"/"+filename+".csv"):
@@ -562,8 +539,8 @@ def stock_tuning(stock_name, features, model_list):
 
             num_ex += 1
             for split in range(VALIDATE_SIZE+TEST_SIZE, TEST_SIZE, -1):
-                stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
-                training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features)
+                stock_data, stock_id, data_df, lda_news_df, GDELTv1, GDELTv2 = load_data(stock_name, news_version)
+                training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, GDELTv1, GDELTv2, split, features)
                 predictions = predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset)
                 generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
             finalize_csv(generate_path+"/"+filename+".csv") 
@@ -572,17 +549,17 @@ def stock_tuning(stock_name, features, model_list):
     return num_ex
 
 def gen_test_for_backtest(stock_name):
-    print("Not done yet")
-    
-    generate_path = BACKTEST_PATH+f"{stock_name}/"
+    if not os.path.exists(BACKTEST_PATH + stock_name):
+        os.makedirs(BACKTEST_PATH + stock_name) 
+    generate_path =  +f"{stock_name}/"
 
     # Insight Wave
     filename = "InsightWave"
     if os.path.exists(generate_path+"/"+filename+".csv"):
-        print("Done already.")
+        print(f"Backtest of {filename} for {stock_name} is already done.")
     
     else:
-        print("Generate Backtest InsightWave for ",stock_name)
+        print(f"Generating Backtest {filename} for ",stock_name)
         print("-> 1 : XGBoost")
         print("-> 2 : RandomForest")
         print("-> 3 : LinearRegression")
@@ -621,50 +598,219 @@ def gen_test_for_backtest(stock_name):
         features = input("Enter features list: ")
         features_list = [int(item.strip()) for item in features.split(',')]
 
-        print("Generate backtest for",stock_name)
+        if "2" in features_list:
+            print("-> 1 : All News")
+            print("-> 2 : Filtered News from Econ Topic from Topic Distribution.")
+            print("-> 3 : Filtered News from Econ News from expert.")
+            print("-> 4 : Filtered News from Econ News and Econ Topic.")
+            print("-----------------------------------------")
+            news_version = input("Enter news version: ")
+            if news_version not in ["1", "2", "3", "4"]:
+                print("Invalid input. Please enter only number.")
+                return
+        else:
+            news_version = "1"
+
         for split in range(TEST_SIZE, 0, -1):
-            stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
-            training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, features_list)
+            stock_data, stock_id, data_df, lda_news_df, GDELTv1, GDELTv2 = load_data(stock_name, news_version)
+            training_scaled, past_cov_ts, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, GDELTv1, GDELTv2, split, features_list)
             predictions = predict_next_n_days(model, training_scaled, past_cov_ts, scaler_dataset)
             generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
         finalize_csv(generate_path+"/"+filename+".csv")
-
-    # ARIMA
-    # filename = "ARIMA"
-    # if os.path.exists(generate_path+"/"+filename+".csv"):
-    #     print("Done already.")
     
-    # else:
-    #     print("Generate Backtest ARIMA for",stock_name)
-    #     p = int(input("Enter p value: "))
-    #     d = int(input("Enter d value: "))
-    #     q = int(input("Enter q value: "))
+    # ARIMA
+    filename = "ARIMA"
+    if os.path.exists(generate_path+"/"+filename+".csv"):
+        print(f"Backtest of {filename} for {stock_name} is already done.")
+    
+    else:
+        print("Generate Backtest ARIMA for",stock_name)
+        p = int(input("Enter p value: "))
+        d = int(input("Enter d value: "))
+        q = int(input("Enter q value: "))
  
     
-    #     model = ARIMA(p = p, d = d, q = q) 
+        model = ARIMA(p = p, d = d, q = q) 
 
-    #     for split in range(TEST_SIZE, 0, -1):
-    #         stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
-    #         training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, [1])
+        for split in range(TEST_SIZE, 0, -1):
+            stock_data, stock_id, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2 = load_data(stock_name)
+            training_scaled, _, scaler_dataset = preprocess_data(stock_data, data_df, lda_news_df, lda_twitter_df, GDELTv1, GDELTv2, split, [1])
 
-    #         try:
-    #             model.fit(training_scaled)
-    #             forecast = model.predict(PREDICT_SIZE)
-    #             predictions = scaler_dataset.inverse_transform(forecast)
-    #         except Exception as e:
-    #             print(f"Error fitting ARIMA model with params {params}: {e}")
+            try:
+                model.fit(training_scaled)
+                forecast = model.predict(PREDICT_SIZE)
+                predictions = scaler_dataset.inverse_transform(forecast)
+            except Exception as e:
+                print(f"Error fitting ARIMA model: {e}")
 
-    #         generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
-    #     finalize_csv(generate_path+"/"+filename+".csv")        
+            generate_output(filename, predictions, stock_data, stock_id, split, stock_name, generate_path + "/")
+        finalize_csv(generate_path+"/"+filename+".csv")   
+    
     print("-----------------------------------------")
 
-def backtest(stock):
-    if not os.path.exists(BACKTEST_PATH + stock):
-        os.makedirs(BACKTEST_PATH + stock) 
-    gen_test_for_backtest(stock)
+def get_sim_fri(starting_money, stock, mode, percentage):
 
-    # DCA
-    # Buy Friday Closing Price
+    log_rows = []
 
+    # Buy in Closing Price in Friday
+    val = pd.read_csv(f"{DATA_PATH}/{stock}.csv")
+    val = val[['Date','Open','Close']].iloc[-TEST_SIZE-1:].reset_index(drop=True)
+    predict = pd.read_csv(f"{BACKTEST_PATH}/{stock}/{mode}.csv")
+    predict = predict[['Date', 'Closing_Price']]
 
+    # Backtest parameters
+    stock_count = 0
+    money = starting_money
+    buying_price = val.loc[0]['Close']
+
+    for i in range(len(predict)):
+        act = val.loc[i]['Close']
+        pred = predict.loc[i]['Closing_Price']
+        date = val.loc[i]['Date']
+        
+        diff = ((pred - act) / act) * 100
+        cut_lost = ((act - buying_price) / buying_price) * 100
+
+        if diff > percentage:
+            # Assuming you buy as much stock as possible with the money you have
+            bought_stocks = money // act
+            bought_stocks = int(bought_stocks / 100) * 100
+            if money >= bought_stocks * act:
+                money -= bought_stocks * act
+                stock_count += bought_stocks
+                buying_price = act
+                action = "Buy"
+            else:
+                action = "Hold"
+        elif diff < -percentage and stock_count > 0:
+            # Sell all stocks
+            money += stock_count * act
+            action = "Sell"
+            stock_count = 0
+        elif cut_lost < -percentage and stock_count > 0:
+            # Sell all stocks
+            money += stock_count * act
+            action = "Stop loss"
+            stock_count = 0
+        else:
+            action = "Hold"
+        
+        log_rows.append({
+            "Date": date,
+            "Action": action,
+            "Stocks Count": stock_count,
+            "Stock Price": act,
+            "Predicted Price": pred,
+            "Percent Change": round(diff,2),
+            "Money Left": money
+        })
+
+    # Sell any remaining stocks at the last available price
+    final_money = money + stock_count * val.iloc[-1]['Close']
+    profit_loss = final_money - starting_money
+
+    final_money_display = f"{final_money} ({'+' if profit_loss > 0 else ''}{profit_loss})"
+
+    log_rows.append({
+        "Date": "SUMMARY",
+        "Action": "Final Result",
+        "Stocks Count": stock_count,
+        "Stock Price": "N/A",
+        "Predicted Price": "N/A",
+        "Percent Change": "N/A",
+        "Money Left": final_money_display
+    })
+
+    df = pd.DataFrame(log_rows)
+    df.to_csv(f'{BACKTEST_PATH}/{stock}/{stock} {mode} Friday.csv', index=False)
+
+def get_sim_mon(starting_money, stock, mode, percentage):
+
+    log_rows = []
+
+    # Buy in Closing Price in Monday
+    val = pd.read_csv(f"{DATA_PATH}/{stock}.csv")
+    val = val[['Date','Open','Close']].iloc[-TEST_SIZE-1:].reset_index(drop=True)
+    predict = pd.read_csv(f"{BACKTEST_PATH}/{stock}/{mode}.csv")
+    predict = predict[['Date', 'Closing_Price']]
+
+    open_data = pd.read_csv(f"{ORIGINAL_DATA_PATH}/{stock}.csv")
+
+    # Backtest parameters
     
+    stock_count = 0
+    money = starting_money
+    buying_price = val.loc[0]['Close']
+
+    for i in range(len(predict)):
+        specific_date_from_val = val.loc[i]['Date']
+        today_row = open_data.index[open_data['Date'] == specific_date_from_val].to_list()[0]
+        next_open_value = open_data.loc[today_row+1]['Open']
+        next_date = open_data.loc[today_row+1]['Date']
+    
+        act = val.loc[i]['Close']
+        pred = predict.loc[i]['Closing_Price']
+        date = next_date
+
+        diff = ((pred - act) / act) * 100
+        cut_lost = ((act - buying_price) / buying_price) * 100
+
+        if diff > percentage:
+            # Assuming you buy as much stock as possible with the money you have
+            bought_stocks = money // next_open_value
+            bought_stocks = int(bought_stocks / 100) * 100
+            if money >= bought_stocks * next_open_value:
+                money -= bought_stocks * next_open_value
+                stock_count += bought_stocks
+                buying_price = next_open_value
+                action = "Buy"
+            else:
+                action = "Hold"
+        elif diff < -percentage and stock_count > 0:
+            # Sell all stocks
+            money += stock_count * next_open_value
+            action = "Sell"
+            stock_count = 0
+        elif cut_lost < -percentage and stock_count > 0:
+            # Sell all stocks
+            money += stock_count * next_open_value
+            action = "Stop loss"
+            stock_count = 0
+        else:
+            action = "Hold"
+
+        log_rows.append({
+            "Date": date,
+            "Action": action,
+            "Stocks Count": stock_count,
+            "Stock Price": next_open_value,
+            "Predicted Price": pred,
+            "Percent Change": round(diff,2),
+            "Money Left": money
+        })
+
+    # Sell any remaining stocks at the last available price
+    final_money = money + stock_count * val.iloc[-1]['Close']
+    profit_loss = final_money - starting_money
+    final_money_display = f"{final_money} ({'+' if profit_loss > 0 else ''}{profit_loss})"
+
+    log_rows.append({
+        "Date": "SUMMARY",
+        "Action": "Final Result",
+        "Stocks Count": stock_count,
+        "Stock Price": "N/A",
+        "Predicted Price": "N/A",
+        "Percent Change": "N/A",
+        "Money Left": final_money_display
+    })
+
+    df = pd.DataFrame(log_rows)
+    df.to_csv(f'{BACKTEST_PATH}/{stock}/{stock} {mode} Monday.csv', index=False)
+
+def cal_backtest(stock):
+    percentage = 5
+    starting_money = 1000000
+    get_sim_mon(starting_money, stock, "ARIMA", percentage)
+    get_sim_mon(starting_money, stock, "InsightWave", percentage)
+    get_sim_fri(starting_money, stock, "ARIMA", percentage)
+    get_sim_fri(starting_money, stock, "InsightWave", percentage)
