@@ -91,10 +91,11 @@ This section provides instructions on how to use the Insight-Wave project to per
 
 ### Data Collection
 
-1. **Prepare Data:**
- 
-
-2. **Run Data Collection:**
+1. **Run Data Collection:**
+ - The folder of Crawling contains the scripts and tools necessary for collecting raw news articles from various sources.
+ - The folder of Parsing contains the Jupyter Notebooks and scripts used to parse the collected raw data into structured formats.
+ - `Consolidate.py` script consolidates multiple text files containing news articles into a single text file. Each article should be separated by two newline characters.
+ - `Checking.ipynb` notebook is used to perform various checks and verifications on the consolidated data. This includes checking for the total number of articles, identifying missing or corrupted articles, and ensuring that the data is in the correct format.
 
 ### Topic Modeling
 
