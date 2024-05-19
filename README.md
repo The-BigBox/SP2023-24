@@ -25,13 +25,9 @@ Insight-Wave/
 │
 ├── DataCollection/
 │   └── src/
-│       ├── Checking.ipynb         # Jupyter notebook for data checking
-│       ├── Consolidate.py         # Script for data consolidation
 │       ├── Crawling/              # Folder for web crawling scripts
 │       └── Parsing/               # Folder for data parsing scripts
-│   
-│
-│
+│      
 ├── StockPrediction/
 │   ├── backtest/                  # Folder for backtesting results
 │   ├── data/
@@ -48,6 +44,7 @@ Insight-Wave/
 │
 ├── requirements.txt               # Project dependencies
 └── README.md                      # Project overview and instructions
+
 ```
 
 ## Installation
