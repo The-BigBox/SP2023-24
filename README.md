@@ -24,13 +24,13 @@ The Insight-Wave project is organized into several key directories and files to 
 Insight-Wave/
 │
 ├── DataCollection/
-│   ├── src/
-│   │   ├── Checking.ipynb         # Jupyter notebook for data checking
-│   │   ├── Consolidate.py         # Script for data consolidation
-│   │   ├── Crawling/              # Folder for web crawling scripts
-│   │   └── Parsing/               # Folder for data parsing scripts
-│   ├── README.md                  # README file for data collection
-│   └── requirements.txt           # Dependencies for data collection
+│   └── src/
+│       ├── Checking.ipynb         # Jupyter notebook for data checking
+│       ├── Consolidate.py         # Script for data consolidation
+│       ├── Crawling/              # Folder for web crawling scripts
+│       └── Parsing/               # Folder for data parsing scripts
+│   
+│
 │
 ├── StockPrediction/
 │   ├── backtest/                  # Folder for backtesting results
