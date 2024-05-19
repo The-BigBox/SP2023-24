@@ -169,9 +169,9 @@ We would like to extend our gratitude to the following individuals and organizat
   - For providing crucial hardware support and a conducive workspace, which were instrumental in achieving our project goals efficiently and effectively.
 
 - **Contributors:**
-  - Mr. Phumtham Akkarasiriwong
-  - Mr. Chayut Piyaosotsun
-  - Mr. Phurich Kongmont
+  - Mr. Phumtham Akkarasiriwong (@Phumtham Akkarasiriwong)
+  - Mr. Chayut Piyaosotsun (@Chayut Piyaosotsun)
+  - Mr. Phurich Kongmont (@Phurich Kongmont)
 
 - **Supporters:**
   - All individuals and organizations that contributed to the successful completion of this project.
