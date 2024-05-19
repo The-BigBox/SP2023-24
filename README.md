@@ -25,6 +25,8 @@ Insight-Wave/
 │
 ├── DataCollection/
 │   └── src/
+│       ├── Checking.ipynb         # Jupyter notebook for data checking
+│       ├── Consolidate.py         # Script for data consolidation
 │       ├── Crawling/              # Folder for web crawling scripts
 │       └── Parsing/               # Folder for data parsing scripts
 │      
@@ -97,13 +99,13 @@ This section provides instructions on how to use the Insight-Wave project to per
 ### Topic Modeling
 
 1. **Prepare Data:**
-   - Use the tokenizer.py script to preprocess your text data. This will tokenize the text, remove stopwords, and save the processed dataset. The customized stopwords list was provided in remove_from_stopword.txt and add_to_stopword.txt located in the src directory.
+   - Use the `tokenizer.py` script to preprocess your text data. This will tokenize the text, remove stopwords, and save the processed dataset. The customized stopwords list was provided in remove_from_stopword.txt and add_to_stopword.txt located in the src directory.
 
 2. **Run Topic Modeling:**
 - Set Up the Training Parameters
-   - Define the number of topics, total passes, and other model parameters in the Model.ipynb notebook.
+   - Define the number of topics, total passes, and other model parameters in the `Model.ipynb` notebook.
 - Train the Model
-   - Open Model.ipynb in Jupyter Notebook.
+   - Open `Model.ipynb` in Jupyter Notebook.
 Execute the cells to train the LDA model on your preprocessed dataset.
 The model will periodically save its state to the specified directory.
 
@@ -127,10 +129,9 @@ The model will periodically save its state to the specified directory.
 ### Analyzing Results
 
 1. **Topic Modeling Results:**
-   - View the topics identified by the topic modeling scripts in the `TopicModeling/output` folder.
    - The topic distribution for each document will be saved in a CSV file.
    - You can analyze this CSV file to understand the distribution of topics across your corpus.
-   - You can view the identified topics and their associated words by running the relevant cells in the Model.ipynb notebook.
+   - You can view the identified topics and their associated words by running the relevant cells in the `Model.ipynb` notebook.
 
 2. **Stock Predictions Result:**
    - Predictions and evaluations are saved in the `StockPrediction/model` folder.
